@@ -1,0 +1,11 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\bin\Debug\net8.0\DomainLayre.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\bin\Debug\net8.0\DomainLayre.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\bin\Debug\net8.0\DomainLayre.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.AssemblyInfoInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.AssemblyInfo.cs
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.csproj.CoreCompileInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\refint\DomainLayre.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\ref\DomainLayre.dll
