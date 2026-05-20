@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceLayerAbstraction;
+using SheredLayer;
 using SheredLayer.DTOs;
 
 namespace PresentationLayer.Controllers
@@ -10,9 +11,9 @@ namespace PresentationLayer.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
+        public async Task<ActionResult<PaginatedResult<ProductDto>>> GetAllProducts([FromQuery] productQueryParams queryParams)
         {
-            var products = await _serviceManger.productService.GetAllProductsAsync();
+            var products = await _serviceManger.productService.GetAllProductsAsync(queryParams);
             return Ok(products);
         }
         [HttpGet("{id}")]

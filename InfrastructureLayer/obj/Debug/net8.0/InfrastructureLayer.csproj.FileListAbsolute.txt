@@ -19,3 +19,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\InfrastructureLayer\obj\Debug\net8.0\
 C:\Users\medok\source\repos\E-Commerce.Wep\InfrastructureLayer\obj\Debug\net8.0\refint\InfrastructureLayer.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\InfrastructureLayer\obj\Debug\net8.0\InfrastructureLayer.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\InfrastructureLayer\obj\Debug\net8.0\ref\InfrastructureLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\InfrastructureLayer\obj\Debug\net8.0\InfrastructureLayer.sourcelink.json

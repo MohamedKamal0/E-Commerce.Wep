@@ -15,3 +15,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\Pr
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\refint\PresentationLayer.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\PresentationLayer.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\ref\PresentationLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\PresentationLayer.sourcelink.json

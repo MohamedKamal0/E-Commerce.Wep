@@ -821,6 +821,7 @@
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "DomainLayre": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "8.0.25",
           "ServiceLayerAbstraction": "1.0.0"
         },
         "runtime": {

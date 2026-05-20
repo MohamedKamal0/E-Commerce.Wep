@@ -9,3 +9,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Debug\net8.0\SheredLa
 C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Debug\net8.0\refint\SheredLayer.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Debug\net8.0\SheredLayer.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Debug\net8.0\ref\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Debug\net8.0\SheredLayer.sourcelink.json

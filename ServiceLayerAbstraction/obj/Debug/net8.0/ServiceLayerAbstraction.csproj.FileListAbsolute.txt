@@ -13,3 +13,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Debug\net
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Debug\net8.0\refint\ServiceLayerAbstraction.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Debug\net8.0\ServiceLayerAbstraction.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Debug\net8.0\ref\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Debug\net8.0\ServiceLayerAbstraction.sourcelink.json

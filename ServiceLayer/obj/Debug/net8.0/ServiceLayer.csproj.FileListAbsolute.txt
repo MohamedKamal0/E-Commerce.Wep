@@ -17,3 +17,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayer\obj\Debug\net8.0\Service
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayer\obj\Debug\net8.0\refint\ServiceLayer.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayer\obj\Debug\net8.0\ServiceLayer.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayer\obj\Debug\net8.0\ref\ServiceLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayer\obj\Debug\net8.0\ServiceLayer.sourcelink.json
