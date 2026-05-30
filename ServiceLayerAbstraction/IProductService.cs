@@ -8,7 +8,7 @@ namespace ServiceLayerAbstraction
         Task<PaginatedResult<ProductDto>> GetAllProductsAsync(productQueryParams queryParams);
         Task<ProductDto?> GetProductByIdAsync(int id);
 
-        Task<IEnumerable<BrandDto>> GetAllBrandAsync();
+        Task<PaginatedResult<BrandDto>> GetAllBrandAsync(BrandQueryParams queryParams);
         Task<IEnumerable<TyepDto>> GetAllTyepAsync();
 
     }

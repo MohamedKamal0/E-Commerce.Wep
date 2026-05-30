@@ -127,6 +127,38 @@
         "tags": [
           "Product"
         ],
+        "parameters": [
+          {
+            "name": "sortingOption",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ProductSortingOptions"
+            }
+          },
+          {
+            "name": "SearchValue",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",

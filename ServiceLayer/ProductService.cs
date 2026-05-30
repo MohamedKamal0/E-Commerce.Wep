@@ -10,11 +10,18 @@ namespace ServiceLayer
 {
     public class ProductService(IUnitOfWorke _unitOfWorke, IMapper _mapper) : IProductService
     {
-        public async Task<IEnumerable<BrandDto>> GetAllBrandAsync()
+        public async Task<PaginatedResult<BrandDto>> GetAllBrandAsync(BrandQueryParams queryParams)
         {
-            var brands = await _unitOfWorke.GetRepository<Product_Brand, int>().GetAllAsync();
 
-            return _mapper.Map<IEnumerable<Product_Brand>, IEnumerable<BrandDto>>(brands);
+            var repo = _unitOfWorke.GetRepository<Product_Brand, int>();
+            var specifications = new BrandSpecification(queryParams);
+            var brands = await repo.GetAllAsync(specifications);
+            var Data = _mapper.Map<IEnumerable<Product_Brand>, IEnumerable<BrandDto>>(brands);
+            var brandCount = brands.Count();
+            var Countpec = new BrandCountSpecification(queryParams);
+            var TotalCount = await repo.CountAsync(Countpec);
+            return new PaginatedResult<BrandDto>(queryParams.PageIndex, brandCount, TotalCount, Data);
+
         }
 
         public async Task<PaginatedResult<ProductDto>> GetAllProductsAsync(productQueryParams queryParams)

@@ -25,10 +25,10 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
         [HttpGet("brands")]
-        public async Task<ActionResult<IEnumerable<BrandDto>>> GetAllBrands()
+        public async Task<ActionResult<IEnumerable<BrandDto>>> GetAllBrands([FromQuery] BrandQueryParams queryParams)
         {
 
-            var brands = await _serviceManger.productService.GetAllBrandAsync();
+            var brands = await _serviceManger.productService.GetAllBrandAsync(queryParams);
             return Ok(brands);
         }
         [HttpGet("types")]
