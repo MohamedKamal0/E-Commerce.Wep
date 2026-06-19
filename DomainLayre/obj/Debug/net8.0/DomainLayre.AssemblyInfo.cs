@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DomainLayre")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+755b78587799b2ce9f0a75e002915462ebfba8bb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cfac1ba691830b88d3e836d72cc2e9e98e04f74c")]
 [assembly: System.Reflection.AssemblyProductAttribute("DomainLayre")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DomainLayre")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

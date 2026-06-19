@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "38QliaD+4DQ=",
+  "dgSpecHash": "F1A/h49fEvw=",
   "success": true,
   "projectFilePath": "C:\\Users\\medok\\source\\repos\\E-Commerce.Wep\\ServiceLayer\\ServiceLayer.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\8.0.25\\microsoft.entityframeworkcore.analyzers.8.0.25.nupkg.sha512",
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\8.0.0\\microsoft.extensions.caching.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.caching.memory\\8.0.1\\microsoft.extensions.caching.memory.8.0.1.nupkg.sha512",
+    "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\8.0.0\\microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.1\\microsoft.extensions.dependencyinjection.8.0.1.nupkg.sha512",
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
     "C:\\Users\\medok\\.nuget\\packages\\microsoft.extensions.logging\\8.0.1\\microsoft.extensions.logging.8.0.1.nupkg.sha512",

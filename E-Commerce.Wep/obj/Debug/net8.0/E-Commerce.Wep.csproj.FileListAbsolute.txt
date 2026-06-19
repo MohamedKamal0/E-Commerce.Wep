@@ -154,3 +154,6 @@ C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\runti
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\E-Commerce.Wep.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\StackExchange.Redis.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\System.IO.Hashing.dll
