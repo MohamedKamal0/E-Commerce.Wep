@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using DomainLayre.Contracts;
+using Microsoft.Extensions.Configuration;
 using ServiceLayerAbstraction;
 
 namespace ServiceLayer
 {
-    public class ServiceManger(IUnitOfWorke _unitOfWorke, IMapper _mapper, IBasketRepository basketRepository) : IServiceManger
+    public class ServiceManger(IUnitOfWorke _unitOfWorke, IMapper _mapper, IBasketRepository basketRepository, IConfiguration _configuration) : IServiceManger
     {
         private readonly Lazy<IProductService> _LazyProductService =
             new Lazy<IProductService>(() => new ProductService(_unitOfWorke, _mapper));
@@ -18,5 +19,9 @@ namespace ServiceLayer
         private readonly Lazy<IOrderService> _LazyOrderService =
             new Lazy<IOrderService>(() => new OrderService(_mapper, basketRepository, _unitOfWorke));
         public IOrderService orderService => _LazyOrderService.Value;
+
+        private readonly Lazy<IPaymentService> _LazypaymentService = new Lazy<IPaymentService>(() => new PaymentService
+        (_configuration, basketRepository, _unitOfWorke, _mapper));
+        public IPaymentService paymentService => _LazypaymentService.Value;
     }
 }

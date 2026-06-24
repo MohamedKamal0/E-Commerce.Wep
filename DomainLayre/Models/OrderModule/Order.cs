@@ -6,13 +6,14 @@
         {
 
         }
-        public Order(string userEmail, OrderAddress address, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subtotal)
+        public Order(string userEmail, OrderAddress address, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subtotal, string paymentIntentId)
         {
             UserEmail = userEmail;
             Address = address;
             DeliveryMethod = deliveryMethod;
             Items = items;
             Subtotal = subtotal;
+            PaymentIntentId = paymentIntentId;
         }
 
         public string UserEmail { get; set; } = default!;
@@ -27,5 +28,7 @@
 
         //NotMapped property
         public decimal GetTotal() => Subtotal + DeliveryMethod.Price;
+
+        public string PaymentIntentId { get; set; }
     }
 }

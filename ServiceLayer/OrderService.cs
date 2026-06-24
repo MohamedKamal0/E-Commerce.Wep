@@ -17,12 +17,19 @@ namespace ServiceLayer
             //Map Address To Order
             var OrderAddress = _mapper.Map<AddressDto, OrderAddress>(order.address);
             //Get Basket
-            var Basket = await _basketRepository.GetBasketAsync(order.BasketId)
+            var basket = await _basketRepository.GetBasketAsync(order.BasketId)
                 ?? throw new BasketNotFoundException(order.BasketId);
+            //for Paymeny
+            ArgumentNullException.ThrowIfNullOrEmpty(basket.paymentIntentId);
+            var OrderRepo = _unitOfWorke.GetRepository<Order, Guid>();
+            var Orderspac = new OrderWihPaymIntentenSpecification(basket.paymentIntentId);
+            var ExistingOrder = await OrderRepo.GetByIdAsync(Orderspac);
+            if (ExistingOrder != null) OrderRepo.Delete(ExistingOrder);
+
             //Create orderItem list
             List<OrderItem> OrderItems = [];
             var ProductRepo = _unitOfWorke.GetRepository<Product, int>();
-            foreach (var item in Basket.Items)
+            foreach (var item in basket.Items)
             {
                 var Product = await ProductRepo.GetByIdAsync(item.Id)
                       ?? throw new ProuductNotFoundException(item.Id);
@@ -42,9 +49,9 @@ namespace ServiceLayer
                 ?? throw new DeliveryMethodNotFoundException(order.DeliveryMethodId);
 
             var subTotal = OrderItems.Sum(i => i.Price * i.Quantity);
-            var Order = new Order(Email, OrderAddress, Deliverymethod, OrderItems, subTotal);
+            var Order = new Order(Email, OrderAddress, Deliverymethod, OrderItems, subTotal, basket.paymentIntentId);
 
-            await _unitOfWorke.GetRepository<Order, Guid>().AddAsync(Order);
+            await OrderRepo.AddAsync(Order);
             await _unitOfWorke.SaveChangesAsync();
             return _mapper.Map<Order, OrderToReturn>(Order);
         }
