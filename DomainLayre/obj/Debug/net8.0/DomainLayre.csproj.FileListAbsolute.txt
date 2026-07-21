@@ -10,3 +10,4 @@ C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\refint\D
 C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\ref\DomainLayre.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\DomainLayre\obj\Debug\net8.0\DomainLayre.csproj.AssemblyReference.cache

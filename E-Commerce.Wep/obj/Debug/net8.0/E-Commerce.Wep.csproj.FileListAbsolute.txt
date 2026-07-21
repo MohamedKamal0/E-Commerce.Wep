@@ -150,3 +150,5 @@ C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Stack
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\System.IO.Hashing.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Stripe.net.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

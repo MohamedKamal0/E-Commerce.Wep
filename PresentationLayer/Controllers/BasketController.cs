@@ -4,9 +4,7 @@ using SheredLayer.DTOs;
 
 namespace PresentationLayer.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BasketController(IServiceManger _serviceManger) : ControllerBase
+    public class BasketController(IServiceManger _serviceManger) : ApiBasController
     {
         [HttpGet("{id}")]
         public async Task<ActionResult<BasketDto>> GetBasketById(string id)

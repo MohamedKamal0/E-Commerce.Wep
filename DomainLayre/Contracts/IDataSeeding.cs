@@ -2,6 +2,8 @@
 {
     public interface IDataSeeding
     {
-        void DataSeed();
+
+        Task IdentityDataSeedAsync();
+
     }
 }

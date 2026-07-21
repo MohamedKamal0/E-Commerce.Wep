@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using DomainLayre.Contracts;
+using DomainLayre.Models.IdentityModeyol;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using ServiceLayerAbstraction;
 
 namespace ServiceLayer
 {
-    public class ServiceManger(IUnitOfWorke _unitOfWorke, IMapper _mapper, IBasketRepository basketRepository, IConfiguration _configuration) : IServiceManger
+    public class ServiceManger(IUnitOfWorke _unitOfWorke, IMapper _mapper, IBasketRepository basketRepository,
+        IConfiguration _configuration, UserManager<ApplicationUser> _userManager) : IServiceManger
     {
         private readonly Lazy<IProductService> _LazyProductService =
             new Lazy<IProductService>(() => new ProductService(_unitOfWorke, _mapper));
@@ -23,5 +26,8 @@ namespace ServiceLayer
         private readonly Lazy<IPaymentService> _LazypaymentService = new Lazy<IPaymentService>(() => new PaymentService
         (_configuration, basketRepository, _unitOfWorke, _mapper));
         public IPaymentService paymentService => _LazypaymentService.Value;
+
+        private readonly Lazy<IAuthService> _LazyAuthService = new Lazy<IAuthService>(() => new AuthService(_userManager, _configuration, _mapper));
+        public IAuthService authService => _LazyAuthService.Value;
     }
 }

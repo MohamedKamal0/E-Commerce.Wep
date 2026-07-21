@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServiceLayerAbstraction;
 using SheredLayer.DTOs;
 
@@ -6,15 +8,16 @@ namespace PresentationLayer.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrderController(IServiceManger _serviceManger) : ControllerBase
+    public class OrderController(IServiceManger _serviceManger) : ApiBasController
     {
         [HttpPost("CreateOrder")]
         public async Task<ActionResult<OrderToReturn>> CreateOrder(OrderDto orderDto)
         {
-            var order = await _serviceManger.orderService.CreateOrder(orderDto, "fkkf");
+            var order = await _serviceManger.orderService.CreateOrder(orderDto, GetEmailFromToke());
             return Ok(order);
         }
         [HttpGet("GetAllDeliverymethod")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<DeliveryMethodDto>>> GetDeliveryMethod()
         {
             var delivery = await _serviceManger.orderService.GetDeliveryMethod();
@@ -23,10 +26,11 @@ namespace PresentationLayer.Controllers
         [HttpGet("GetAllOrders")]
         public async Task<ActionResult<IEnumerable<OrderToReturn>>> GetAllOrders()
         {
-            var orders = await _serviceManger.orderService.GetAllOrders("fkkf");
+            var orders = await _serviceManger.orderService.GetAllOrders(GetEmailFromToke());
             return Ok(orders);
         }
         [HttpGet("{id}")]
+
         public async Task<ActionResult<OrderToReturn>> GetOrderById(Guid id)
         {
             var order = await _serviceManger.orderService.GetOrderById(id);

@@ -4,10 +4,8 @@ using SheredLayer.DTOs;
 
 namespace PresentationLayer.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
 
-    public class PaymentController(IServiceManger _serviceManger) : ControllerBase
+    public class PaymentController(IServiceManger _serviceManger) : ApiBasController
     {
         [HttpPost("{BasketId}")]
         public async Task<ActionResult<BasketDto>> CreateOrUpdatePaymentIntent(string BasketId)

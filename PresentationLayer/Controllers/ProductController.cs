@@ -5,9 +5,7 @@ using SheredLayer.DTOs;
 
 namespace PresentationLayer.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController(IServiceManger _serviceManger) : ControllerBase
+    public class ProductController(IServiceManger _serviceManger) : ApiBasController
     {
 
         [HttpGet]
@@ -25,6 +23,7 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
         [HttpGet("brands")]
+
         public async Task<ActionResult<IEnumerable<BrandDto>>> GetAllBrands([FromQuery] BrandQueryParams queryParams)
         {
 

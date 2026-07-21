@@ -1,4 +1,5 @@
-﻿using DomainLayre.Exceptions;
+﻿
+using DomainLayre.Exceptions;
 using SheredLayer.ErrorModels;
 
 namespace E_Commerce.Wep.CustomMiddleWares
@@ -16,34 +17,50 @@ namespace E_Commerce.Wep.CustomMiddleWares
         {
             try
             {
-                await _next.Invoke(httpContext);
-                if (httpContext.Response.StatusCode == StatusCodes.Status404NotFound)
+                await _next(httpContext);
+
+                if (!httpContext.Response.HasStarted &&
+                    httpContext.Response.StatusCode == StatusCodes.Status404NotFound)
                 {
-                    var Response = new ErrorToReturn()
+                    httpContext.Response.ContentType = "application/json";
+
+                    var response = new ErrorToReturn
                     {
                         StatuseCode = StatusCodes.Status404NotFound,
-                        ErrorMessage = $"End Point{httpContext.Request.Path}is not found"
+                        ErrorMessage = $"End Point {httpContext.Request.Path} is not found"
                     };
-                    await httpContext.Response.WriteAsJsonAsync(Response);
+
+                    await httpContext.Response.WriteAsJsonAsync(response);
                 }
 
             }
+            //هنا انا بضيف كل الارور الي بتطلعلي  علشان تعدي علي المدل وير اي ارور جديد هتضيفه في اكسبشن عندك تيجي تضيفه هنا 
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Something Went Wrong");
-                httpContext.Response.StatusCode = ex switch
-                {
-                    NotFoundException => StatusCodes.Status404NotFound,
-                    _ => StatusCodes.Status500InternalServerError
-                };
 
+                _logger.LogError(ex, "Something Went Wrong");
                 var Response = new ErrorToReturn()
                 {
                     StatuseCode = httpContext.Response.StatusCode,
                     ErrorMessage = ex.Message
                 };
+                httpContext.Response.StatusCode = ex switch
+                {
+                    NotFoundException => StatusCodes.Status404NotFound,
+                    UnauthorizedException => StatusCodes.Status401Unauthorized,
+                    BadRequestException badRequestException => GetBadRequestErrore(badRequestException, Response),
+                    _ => StatusCodes.Status500InternalServerError
+                };
+
+
                 await httpContext.Response.WriteAsJsonAsync(Response);
             }
+        }
+
+        private static int GetBadRequestErrore(BadRequestException badRequestException, ErrorToReturn response)
+        {
+            response.Errores = badRequestException.Errors;
+            return StatusCodes.Status400BadRequest;
         }
     }
 }

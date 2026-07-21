@@ -4,5 +4,6 @@
     {
         public int StatuseCode { get; set; }
         public string ErrorMessage { get; set; } = default!;
+        public List<string>? Errores { get; set; }
     }
 }

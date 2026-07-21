@@ -16,8 +16,4 @@
     <ProjectReference Include="..\ServiceLayer\ServiceLayer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataSeed\" />
-  </ItemGroup>
-
 </Project>

@@ -6,5 +6,6 @@
         public IBasketService basketService { get; }
         public IOrderService orderService { get; }
         public IPaymentService paymentService { get; }
+        public IAuthService authService { get; }
     }
 }
