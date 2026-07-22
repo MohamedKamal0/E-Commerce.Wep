@@ -802,6 +802,7 @@
       },
       "PresentationLayer/1.0.0": {
         "dependencies": {
+          "DomainLayre": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.25",
           "ServiceLayerAbstraction": "1.0.0"
         },

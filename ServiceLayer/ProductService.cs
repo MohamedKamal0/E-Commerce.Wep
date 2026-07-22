@@ -55,5 +55,40 @@ namespace ServiceLayer
             return _mapper.Map<Product?, ProductDto?>(product);
 
         }
+
+        public async Task<ProductDto> CreateProductAsync(ProductCreateDto productDto)
+        {
+            if (productDto.PictureUrls is null || productDto.PictureUrls.Count == 0)
+                throw new BadRequestException(["At least one product image is required"]);
+
+            var brand = await _unitOfWorke.GetRepository<Product_Brand, int>().GetByIdAsync(productDto.BrandId);
+            if (brand is null)
+                throw new BadRequestException([$"Brand with id {productDto.BrandId} was not found"]);
+
+            var type = await _unitOfWorke.GetRepository<Product_Type, int>().GetByIdAsync(productDto.TyepId);
+            if (type is null)
+                throw new BadRequestException([$"Type with id {productDto.TyepId} was not found"]);
+
+            var product = new Product
+            {
+                Name = productDto.Name,
+                Description = productDto.Description,
+                Price = productDto.Price,
+                BrandId = productDto.BrandId,
+                TyepId = productDto.TyepId,
+                Images = productDto.PictureUrls
+                    .Select((url, index) => new ProductImage
+                    {
+                        PictureUrl = url,
+                        DisplayOrder = index
+                    })
+                    .ToList()
+            };
+
+            await _unitOfWorke.GetRepository<Product, int>().AddAsync(product);
+            await _unitOfWorke.SaveChangesAsync();
+
+            return (await GetProductByIdAsync(product.Id))!;
+        }
     }
 }

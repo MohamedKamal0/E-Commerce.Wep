@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your Crochet Atelier account to shop handmade crochet bags and track orders.">
+  <title>Register — Crochet Atelier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/responsive.css" rel="stylesheet">
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="navbar-root"></div>
+  <div id="toast-container"></div>
+
+  <main class="auth-page">
+    <div class="auth-card reveal">
+      <div class="text-center mb-4">
+        <img src="/images/logo.svg" alt="Crochet Atelier" width="56" class="mb-3">
+        <h2>Create Account</h2>
+        <p class="auth-subtitle">Join our community of handmade bag lovers</p>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="form-floating">
+          <input type="text" class="form-control" id="displayName" placeholder="Full Name" required autocomplete="name">
+          <label for="displayName">Full Name</label>
+        </div>
+        <div class="form-floating">
+          <input type="email" class="form-control" id="email" placeholder="Email" required autocomplete="email">
+          <label for="email">Email Address</label>
+        </div>
+        <div class="form-floating">
+          <input type="tel" class="form-control" id="phone" placeholder="Phone" required autocomplete="tel">
+          <label for="phone">Phone Number</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" placeholder="Password" required autocomplete="new-password">
+          <label for="password">Password</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
+          <label for="confirmPassword">Confirm Password</label>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 btn-lg mt-2">Create Account</button>
+      </form>
+
+      <p class="auth-divider">Already have an account? <a href="/pages/login.html">Sign in</a></p>
+    </div>
+  </main>
+
+  <div id="footer-root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/js/pages/register.js"></script>
+</body>
+</html>

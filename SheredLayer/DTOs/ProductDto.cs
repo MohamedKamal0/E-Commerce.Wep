@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SheredLayer.DTOs
+﻿namespace SheredLayer.DTOs
 {
     public class ProductDto
     {
@@ -12,11 +6,13 @@ namespace SheredLayer.DTOs
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = default!;
 
+        /// <summary>Primary image — first entry in <see cref="PictureUrls"/> (backward compatible).</summary>
         public string PictureUrl { get; set; } = default!;
+
+        public List<string> PictureUrls { get; set; } = [];
 
         public string BrandName { get; set; } = default!;
         public string TypeName { get; set; } = default!;
         public decimal Price { get; set; }
-        
     }
 }

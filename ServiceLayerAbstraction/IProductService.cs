@@ -11,5 +11,7 @@ namespace ServiceLayerAbstraction
         Task<PaginatedResult<BrandDto>> GetAllBrandAsync(BrandQueryParams queryParams);
         Task<IEnumerable<TyepDto>> GetAllTyepAsync();
 
+        Task<ProductDto> CreateProductAsync(ProductCreateDto productDto);
+
     }
 }

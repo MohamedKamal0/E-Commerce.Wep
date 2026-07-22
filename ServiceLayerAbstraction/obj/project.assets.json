@@ -10,7 +10,10 @@
         },
         "runtime": {
           "bin/placeholder/SheredLayer.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },

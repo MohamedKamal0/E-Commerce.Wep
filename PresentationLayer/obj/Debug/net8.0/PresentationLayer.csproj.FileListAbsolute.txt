@@ -16,3 +16,5 @@ C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\re
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\PresentationLayer.pdb
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\ref\PresentationLayer.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\obj\Debug\net8.0\PresentationLayer.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\bin\Debug\net8.0\DomainLayre.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\PresentationLayer\bin\Debug\net8.0\DomainLayre.pdb

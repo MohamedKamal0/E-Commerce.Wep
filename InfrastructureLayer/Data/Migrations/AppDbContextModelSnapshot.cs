@@ -129,10 +129,6 @@ namespace InfrastructureLayer.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PictureUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
@@ -146,6 +142,31 @@ namespace InfrastructureLayer.Data.Migrations
                     b.HasIndex("TyepId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("DomainLayre.Models.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PictureUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId", "DisplayOrder");
+
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("DomainLayre.Models.Product_Brand", b =>
@@ -276,6 +297,22 @@ namespace InfrastructureLayer.Data.Migrations
                     b.Navigation("Product_Brand");
 
                     b.Navigation("Product_Type");
+                });
+
+            modelBuilder.Entity("DomainLayre.Models.ProductImage", b =>
+                {
+                    b.HasOne("DomainLayre.Models.Product", "Product")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DomainLayre.Models.Product", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("DomainLayre.Models.OrderModule.Order", b =>

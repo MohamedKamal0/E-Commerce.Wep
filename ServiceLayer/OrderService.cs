@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DomainLayre.Contracts;
+using DomainLayre;
 using DomainLayre.Exceptions;
 using DomainLayre.Models;
 using DomainLayre.Models.OrderModule;
@@ -31,12 +32,17 @@ namespace ServiceLayer
             var ProductRepo = _unitOfWorke.GetRepository<Product, int>();
             foreach (var item in basket.Items)
             {
-                var Product = await ProductRepo.GetByIdAsync(item.Id)
+                var productSpec = new ProductWithprandAndTyepSpecification(item.Id);
+                var Product = await ProductRepo.GetByIdAsync(productSpec)
                       ?? throw new ProuductNotFoundException(item.Id);
                 var orderItem = new OrderItem
                 {
                     Product = new ProductItemOrdered()
-                    { ProductId = Product.Id, ProductName = Product.Name, PictureUrl = Product.PictureUrl },
+                    {
+                        ProductId = Product.Id,
+                        ProductName = Product.Name,
+                        PictureUrl = Product.GetPrimaryPictureUrl()
+                    },
                     Price = item.Price,
                     Quantity = item.Quantity
 

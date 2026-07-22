@@ -13,6 +13,7 @@ namespace ServiceLayer.Specifications
         {
             AddInclude(p => p.Product_Brand);
             AddInclude(p => p.Product_Type);
+            AddInclude(p => p.Images);
             switch (queryParams.sortingOption)
             {
                 case ProductSortingOptions.NameASC:
@@ -37,6 +38,7 @@ namespace ServiceLayer.Specifications
         {
             AddInclude(p => p.Product_Brand);
             AddInclude(p => p.Product_Type);
+            AddInclude(p => p.Images);
         }
     }
 }

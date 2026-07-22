@@ -116,6 +116,10 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStatusCodePages();
 app.UseHttpsRedirection();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -13,6 +13,7 @@ namespace InfrastructureLayer.Data
 
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Product_Brand> ProductBrands { get; set; }
         public DbSet<Product_Type> product_Types { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

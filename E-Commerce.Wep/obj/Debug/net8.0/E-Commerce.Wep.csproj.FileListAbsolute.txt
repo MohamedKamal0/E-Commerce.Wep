@@ -27,7 +27,6 @@ C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\stati
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\E-Commer.4ED1644B.Up2Date
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\E-Commerce.Wep.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\refint\E-Commerce.Wep.dll
@@ -152,3 +151,5 @@ C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Newto
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Stripe.net.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\bin\Debug\net8.0\E-Commerce.Wep.staticwebassets.runtime.json
+C:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
