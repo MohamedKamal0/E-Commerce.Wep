@@ -50,7 +50,7 @@ namespace InfrastructureLayer.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethod");
+                    b.ToTable("DeliveryMethods");
                 });
 
             modelBuilder.Entity("DomainLayre.Models.OrderModule.Order", b =>
@@ -310,14 +310,14 @@ namespace InfrastructureLayer.Data.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DomainLayre.Models.Product", b =>
-                {
-                    b.Navigation("Images");
-                });
-
             modelBuilder.Entity("DomainLayre.Models.OrderModule.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("DomainLayre.Models.Product", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

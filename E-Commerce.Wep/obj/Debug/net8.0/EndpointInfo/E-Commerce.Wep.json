@@ -1206,6 +1206,21 @@
             "type": "string",
             "nullable": true
           },
+          "brand": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductImageDto"
+            },
+            "nullable": true
+          },
           "pictureUrl": {
             "type": "string",
             "nullable": true
@@ -1252,6 +1267,20 @@
             "items": {
               "$ref": "#/components/schemas/ProductDto"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProductImageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "imageUrl": {
+            "type": "string",
             "nullable": true
           }
         },

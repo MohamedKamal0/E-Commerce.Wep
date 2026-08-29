@@ -29,8 +29,9 @@ namespace ServiceLayer.Specifications
                     AddOrderByDescending(p => p.Price);
                     break;
                 default:
+                    if (!string.IsNullOrWhiteSpace(queryParams.SearchValue))
+                        AddOrderBy(p => p.Name);
                     break;
-
             }
             ApplyPagination(queryParams.PageSize, queryParams.PageIndex);
         }

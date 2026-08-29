@@ -53,8 +53,12 @@ export function isAuthenticated() {
 }
 
 /** Resolve product image URL to an absolute same-origin path */
-export function resolveImageUrl(url) {
-  if (!url || String(url).trim() === '') return CONFIG.PLACEHOLDER_IMAGE;
+export function resolveImageUrl(url, options = {}) {
+  const { placeholder = true } = options;
+
+  if (!url || String(url).trim() === '') {
+    return placeholder ? CONFIG.PLACEHOLDER_IMAGE : '';
+  }
 
   const trimmed = String(url).trim();
 
@@ -79,11 +83,21 @@ export function escapeHtml(value) {
     .replace(/>/g, '&gt;');
 }
 
-/** Standard img attributes with broken-image fallback */
-export function productImageAttrs(url, alt = '') {
-  const src = resolveImageUrl(url);
+/** Standard img attributes with optional broken-image fallback */
+export function productImageAttrs(url, alt = '', options = {}) {
+  const usePlaceholder = options.usePlaceholder !== false;
+  const src = resolveImageUrl(url, { placeholder: usePlaceholder });
+
+  if (!src) {
+    return `alt="${escapeHtml(alt)}" role="presentation"`;
+  }
+
   const placeholder = escapeHtml(CONFIG.PLACEHOLDER_IMAGE);
-  return `src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy" onerror="this.onerror=null;this.src='${placeholder}'"`;
+  const onerror = usePlaceholder
+    ? ` onerror="this.onerror=null;this.src='${placeholder}'"`
+    : ' onerror="this.style.display=\'none\'"';
+
+  return `src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" loading="lazy"${onerror}`;
 }
 
 /** Format price as currency */

@@ -105,7 +105,7 @@ var app = builder.Build();
 
 using var Scope = app.Services.CreateScope();
 var ObjectOfDataSeeding = Scope.ServiceProvider.GetRequiredService<IDataSeeding>();
-ObjectOfDataSeeding.IdentityDataSeedAsync();
+await ObjectOfDataSeeding.IdentityDataSeedAsync();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<CustomExceptipnHandlerMiddleWare>();

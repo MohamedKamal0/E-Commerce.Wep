@@ -94,13 +94,21 @@ export async function renderNavbar() {
   const loggedIn = isAuthenticated();
   const displayName = loggedIn ? await getUserDisplayName() : null;
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const isShopPage = currentPage === 'shop.html';
 
   root.innerHTML = `
-    <nav class="navbar-custom" id="mainNavbar">
+    <nav class="navbar-custom${isShopPage ? ' navbar-shop' : ''}" id="mainNavbar">
       <div class="container-fluid px-4">
         <a class="navbar-brand" href="/pages/index.html">
           <img src="/images/logo.svg" alt="Crochet Atelier" class="brand-logo">
-          <span class="brand-text">Crochet Atelier</span>
+          ${
+            isShopPage
+              ? `<span class="brand-text-wrap">
+                  <span class="brand-text">Crochet Atelier</span>
+                  <span class="brand-tagline">Handmade with Love</span>
+                </span>`
+              : '<span class="brand-text">Crochet Atelier</span>'
+          }
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
@@ -112,6 +120,7 @@ export async function renderNavbar() {
             <li class="nav-item"><a class="nav-link ${currentPage === 'index.html' ? 'active' : ''}" href="/pages/index.html">Home</a></li>
             <li class="nav-item"><a class="nav-link ${currentPage === 'shop.html' ? 'active' : ''}" href="/pages/shop.html">Shop</a></li>
             <li class="nav-item"><a class="nav-link ${currentPage === 'about.html' ? 'active' : ''}" href="/pages/about.html">About</a></li>
+            ${isShopPage ? '<li class="nav-item"><a class="nav-link" href="/pages/shop.html">Collections</a></li>' : ''}
             <li class="nav-item"><a class="nav-link ${currentPage === 'contact.html' ? 'active' : ''}" href="/pages/contact.html">Contact</a></li>
           </ul>
 
@@ -119,17 +128,17 @@ export async function renderNavbar() {
             <button type="button" class="nav-action-btn" id="searchToggleBtn" aria-label="Search">
               <i class="fas fa-search"></i>
             </button>
-            <a href="/pages/shop.html#wishlist" class="nav-action-btn wishlist-link" aria-label="Wishlist">
+            ${isShopPage ? '' : `<a href="/pages/shop.html#wishlist" class="nav-action-btn wishlist-link" aria-label="Wishlist">
               <i class="fas fa-heart"></i>
               ${wishlistCount > 0 ? `<span class="badge-count">${wishlistCount}</span>` : ''}
-            </a>
+            </a>`}
             <a href="/pages/cart.html" class="nav-action-btn cart-link" aria-label="Cart">
               <i class="fas fa-shopping-bag"></i>
               ${cartCount > 0 ? `<span class="badge-count">${cartCount}</span>` : ''}
             </a>
-            <button type="button" class="nav-action-btn" id="darkModeToggle" aria-label="Toggle dark mode">
+            ${isShopPage ? '' : `<button type="button" class="nav-action-btn" id="darkModeToggle" aria-label="Toggle dark mode">
               <i class="fas fa-moon"></i>
-            </button>
+            </button>`}
             ${
               loggedIn
                 ? `
@@ -167,7 +176,9 @@ export async function renderNavbar() {
   `;
 
   initNavbarEvents();
-  initDarkMode();
+  if (document.getElementById('darkModeToggle')) {
+    initDarkMode();
+  }
   handleNavbarScroll();
 }
 
@@ -293,17 +304,25 @@ export function renderFooter() {
 /* ─── Product Card ─── */
 
 export function renderProductCard(product, options = {}) {
+  if (options.layout === 'shop') {
+    return renderShopProductCard(product, options);
+  }
+
   const p = normalizeProduct(product);
   if (!p) return '';
 
   const inWishlist = isInWishlist(p.id);
   const showQuickView = options.quickView !== false;
   const safeName = escapeHtml(p.name);
+  const imageUrl = getPrimaryImageUrl(p);
+  const imageMarkup = imageUrl
+    ? `<img ${productImageAttrs(imageUrl, p.name, { usePlaceholder: false })}>`
+    : '<div class="product-card-no-image" aria-hidden="true"><i class="fas fa-shopping-bag"></i></div>';
 
   return `
     <div class="product-card reveal" data-product-id="${p.id}">
       <div class="product-card-image">
-        <img ${productImageAttrs(getPrimaryImageUrl(p), p.name)}>
+        ${imageMarkup}
         <div class="product-card-overlay">
           ${showQuickView ? `<button type="button" class="btn btn-light btn-sm quick-view-btn" data-id="${p.id}"><i class="fas fa-eye me-1"></i> Quick View</button>` : ''}
           <button type="button" class="btn btn-primary btn-sm add-to-cart-btn" data-id="${p.id}">
@@ -327,6 +346,43 @@ export function renderProductCard(product, options = {}) {
         <div class="product-price-row">
           <span class="product-price">${formatPrice(p.price)}</span>
         </div>
+      </div>
+    </div>
+  `;
+}
+
+/** Shop page product card — visible add-to-cart, no hover overlay */
+export function renderShopProductCard(product, options = {}) {
+  const p = normalizeProduct(product);
+  if (!p) return '';
+
+  const inWishlist = isInWishlist(p.id);
+  const safeName = escapeHtml(p.name);
+  const imageUrl = getPrimaryImageUrl(p);
+  const imageMarkup = imageUrl
+    ? `<img ${productImageAttrs(imageUrl, p.name, { usePlaceholder: false })}>`
+    : '<div class="product-card-no-image" aria-hidden="true"><i class="fas fa-shopping-bag"></i></div>';
+
+  return `
+    <div class="product-card shop-product-card reveal" data-product-id="${p.id}">
+      <div class="product-card-image">
+        ${imageMarkup}
+        <button type="button" class="wishlist-btn ${inWishlist ? 'active' : ''}" data-id="${p.id}" aria-label="Add to wishlist">
+          <i class="${inWishlist ? 'fas' : 'far'} fa-heart"></i>
+        </button>
+      </div>
+      <div class="product-card-body">
+        <h5 class="product-name">
+          <a href="/pages/product-details.html?id=${p.id}">${safeName}</a>
+        </h5>
+        <div class="product-rating">
+          ${renderStars(5)}
+          <span class="rating-count">(24)</span>
+        </div>
+        <div class="product-price-row">
+          <span class="product-price">${formatPrice(p.price)}</span>
+        </div>
+        <button type="button" class="shop-add-to-cart-btn add-to-cart-btn" data-id="${p.id}">Add to Cart</button>
       </div>
     </div>
   `;
@@ -368,7 +424,11 @@ export function showQuickViewModal(product) {
         <div class="modal-body">
           <div class="row g-4">
             <div class="col-md-6">
-              <img ${productImageAttrs(getPrimaryImageUrl(p), p.name)} class="img-fluid rounded-4">
+              ${
+                getPrimaryImageUrl(p)
+                  ? `<img ${productImageAttrs(getPrimaryImageUrl(p), p.name, { usePlaceholder: false })} class="img-fluid rounded-4">`
+                  : '<div class="product-card-no-image product-card-no-image--modal rounded-4"><i class="fas fa-shopping-bag"></i></div>'
+              }
             </div>
             <div class="col-md-6">
               <span class="product-brand">${p.brandName}</span>
@@ -429,6 +489,16 @@ export function initQuantitySelector(container) {
 
 export function bindProductCardEvents(container, onAddToCart) {
   if (!container) return;
+
+  container.querySelectorAll('.product-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('button, a, input, select, textarea')) return;
+      const productId = card.dataset.productId;
+      if (productId) {
+        window.location.href = `/pages/product-details.html?id=${productId}`;
+      }
+    });
+  });
 
   container.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
     btn.addEventListener('click', async (e) => {
@@ -498,7 +568,13 @@ function getRevealObserver() {
 export function observeRevealElements(root = document) {
   const scope = root instanceof Element ? root : document;
   scope.querySelectorAll('.reveal:not(.visible)').forEach((el) => {
-    getRevealObserver().observe(el);
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (inView) {
+      el.classList.add('visible');
+    } else {
+      getRevealObserver().observe(el);
+    }
   });
 }
 
@@ -614,8 +690,13 @@ export function initFloatingLabels() {
 
 /* ─── Pagination ─── */
 
-export function renderPagination(currentPage, totalPages, onPageChange) {
-  if (totalPages <= 1) return '';
+export function renderPagination(container, currentPage, totalPages, onPageChange) {
+  if (!container) return;
+
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
 
   let html = '<nav class="pagination-nav" aria-label="Product pagination"><ul class="pagination">';
 
@@ -639,20 +720,17 @@ export function renderPagination(currentPage, totalPages, onPageChange) {
 
   html += '</ul></nav>';
 
-  const container = document.createElement('div');
   container.innerHTML = html;
 
   container.querySelectorAll('.page-link[data-page]').forEach((link) => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      const page = parseInt(link.dataset.page);
+      const page = parseInt(link.dataset.page, 10);
       if (page >= 1 && page <= totalPages && page !== currentPage) {
         onPageChange(page);
       }
     });
   });
-
-  return container.innerHTML;
 }
 
 /* ─── Page Init ─── */

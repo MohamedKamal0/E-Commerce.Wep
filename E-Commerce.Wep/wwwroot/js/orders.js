@@ -5,7 +5,7 @@ import { apiFetch, formatPrice, resolveImageUrl, productImageAttrs } from './api
 
 /** Get all delivery methods */
 export async function getDeliveryMethods() {
-  return apiFetch('/api/Order/GetAllDeliverymethod');
+  return apiFetch('/api/Order/GetAllDeliverymethod', { auth: false });
 }
 
 /** Create order after payment */

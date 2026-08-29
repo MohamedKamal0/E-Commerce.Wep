@@ -17,7 +17,7 @@ namespace PresentationLayer.Controllers
             return Ok(order);
         }
         [HttpGet("GetAllDeliverymethod")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DeliveryMethodDto>>> GetDeliveryMethod()
         {
             var delivery = await _serviceManger.orderService.GetDeliveryMethod();

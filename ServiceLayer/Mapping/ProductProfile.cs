@@ -10,8 +10,15 @@ namespace ServiceLayer.Mapping
         public ProductProfile()
         {
             CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Product_Brand.Name))
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Product_Type.Name))
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Product_Brand.Name))
                 .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.Product_Type.Name))
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src =>
+                    src.Images
+                        .OrderBy(i => i.DisplayOrder)
+                        .Select(i => new ProductImageDto { Id = i.Id, ImageUrl = i.PictureUrl })
+                        .ToList()))
                 .ForMember(dest => dest.PictureUrls, opt => opt.MapFrom(src =>
                     src.Images.OrderBy(i => i.DisplayOrder).Select(i => i.PictureUrl).ToList()))
                 .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.GetPrimaryPictureUrl()));

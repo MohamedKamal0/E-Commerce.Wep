@@ -1,5 +1,6 @@
 ﻿using DomainLayre.Contracts;
 using DomainLayre.Models.IdentityModeyol;
+using DomainLayre.Models.OrderModule;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,8 @@ namespace InfrastructureLayer.DataSeed
                 {
                     _appdbContext.Database.Migrate();
                 }
+
+                await SeedDeliveryMethodsAsync();
 
                 if (!_roleManager.Roles.Any())
                 {
@@ -54,6 +57,38 @@ namespace InfrastructureLayer.DataSeed
 
             }
 
+        }
+
+        private async Task SeedDeliveryMethodsAsync()
+        {
+            if (await _appdbContext.Set<DeliveryMethod>().AnyAsync())
+                return;
+
+            await _appdbContext.Set<DeliveryMethod>().AddRangeAsync(
+                new DeliveryMethod
+                {
+                    ShortName = "Standard",
+                    Description = "Reliable delivery to your door",
+                    DeliveryTime = "3-5 business days",
+                    Price = 5.99m
+                },
+                new DeliveryMethod
+                {
+                    ShortName = "Express",
+                    Description = "Priority handling and faster delivery",
+                    DeliveryTime = "1-2 business days",
+                    Price = 12.99m
+                },
+                new DeliveryMethod
+                {
+                    ShortName = "Economy",
+                    Description = "Budget-friendly shipping option",
+                    DeliveryTime = "5-7 business days",
+                    Price = 2.99m
+                }
+            );
+
+            await _appdbContext.SaveChangesAsync();
         }
     }
 }

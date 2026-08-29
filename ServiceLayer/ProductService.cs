@@ -21,7 +21,7 @@ namespace ServiceLayer
             var brandCount = brands.Count();
             var Countpec = new BrandCountSpecification(queryParams);
             var TotalCount = await repo.CountAsync(Countpec);
-            return new PaginatedResult<BrandDto>(queryParams.PageIndex, brandCount, TotalCount, Data);
+            return new PaginatedResult<BrandDto>(queryParams.PageIndex, queryParams.PageSize, TotalCount, Data);
 
         }
 
@@ -34,7 +34,7 @@ namespace ServiceLayer
             var ProductCount = products.Count();
             var CountSpec = new ProductCountSpecification(queryParams);
             var TotalCount = await repo.CountAsync(CountSpec);
-            return new PaginatedResult<ProductDto>(queryParams.PageIndex, ProductCount, TotalCount, Data);
+            return new PaginatedResult<ProductDto>(queryParams.PageIndex, queryParams.PageSize, TotalCount, Data);
         }
 
         public async Task<IEnumerable<TyepDto>> GetAllTyepAsync()

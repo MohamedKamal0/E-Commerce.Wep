@@ -11,20 +11,48 @@ import {
   normalizeBrand, normalizeType, getTotalPages, getWishlist, normalizeProduct
 } from '../products.js';
 import { addToCart } from '../basket.js';
-import { CONFIG } from '../config.js';
+
+const SHOP_PAGE_SIZE = 9;
+const PRICE_MIN = 20;
+const PRICE_MAX = 650;
 
 let currentPage = 1;
-let filters = { search: '', brandId: '', typeId: '', sort: 0 };
+const SORT_NAME_ASC = 1;
+let filters = { search: '', brandId: '', typeId: '', sort: 0, maxPrice: PRICE_MAX, color: '' };
+
+function getEffectiveSort() {
+  if (filters.search.trim() && !filters.sort) {
+    return SORT_NAME_ASC;
+  }
+  return filters.sort;
+}
+
+function applySearchSortDefault() {
+  if (filters.search.trim() && !filters.sort) {
+    filters.sort = SORT_NAME_ASC;
+    const sortFilter = document.getElementById('sortFilter');
+    if (sortFilter) sortFilter.value = String(SORT_NAME_ASC);
+  }
+}
 
 async function initShopPage() {
   await initPage();
+  observeRevealElements(document.querySelector('.shop-hero'));
   parseUrlParams();
   await loadFilters();
   applyTypeFromUrl();
+  bindFilterEvents();
   await loadProducts();
 
+  if (window.location.hash === '#wishlist') {
+    renderWishlist();
+  }
+}
+
+function bindFilterEvents() {
   document.getElementById('searchInput')?.addEventListener('input', debounce(() => {
     filters.search = document.getElementById('searchInput').value;
+    applySearchSortDefault();
     currentPage = 1;
     loadProducts();
   }, 400));
@@ -37,30 +65,79 @@ async function initShopPage() {
 
   document.getElementById('typeFilter')?.addEventListener('change', (e) => {
     filters.typeId = e.target.value;
+    syncCategoryRadios(e.target.value);
+    currentPage = 1;
+    loadProducts();
+  });
+
+  document.getElementById('categoryFilterList')?.addEventListener('change', (e) => {
+    if (e.target.name !== 'categoryFilter') return;
+    filters.typeId = e.target.value;
+    const typeSelect = document.getElementById('typeFilter');
+    if (typeSelect) typeSelect.value = e.target.value;
+    currentPage = 1;
+    loadProducts();
+  });
+
+  document.getElementById('priceRangeMax')?.addEventListener('input', debounce((e) => {
+    filters.maxPrice = parseInt(e.target.value, 10) || PRICE_MAX;
+    document.getElementById('priceMaxLabel').textContent = `$${filters.maxPrice}`;
+    currentPage = 1;
+    loadProducts();
+  }, 300));
+
+  document.getElementById('colorSwatches')?.addEventListener('click', (e) => {
+    const swatch = e.target.closest('.color-swatch');
+    if (!swatch) return;
+    document.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('active'));
+    swatch.classList.add('active');
+    filters.color = swatch.dataset.color || '';
     currentPage = 1;
     loadProducts();
   });
 
   document.getElementById('sortFilter')?.addEventListener('change', (e) => {
-    filters.sort = parseInt(e.target.value) || 0;
+    filters.sort = parseInt(e.target.value, 10) || 0;
     currentPage = 1;
     loadProducts();
   });
 
-  document.getElementById('clearFilters')?.addEventListener('click', () => {
-    filters = { search: '', brandId: '', typeId: '', sort: 0 };
-    document.getElementById('searchInput').value = '';
-    document.getElementById('brandFilter').value = '';
-    document.getElementById('typeFilter').value = '';
-    document.getElementById('sortFilter').value = '0';
-    currentPage = 1;
-    loadProducts();
-  });
+  document.getElementById('clearFilters')?.addEventListener('click', resetFilters);
+}
 
-  // Wishlist section
-  if (window.location.hash === '#wishlist') {
-    renderWishlist();
-  }
+function resetFilters() {
+  filters = { search: '', brandId: '', typeId: '', sort: 0, maxPrice: PRICE_MAX, color: '' };
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
+
+  const brandSelect = document.getElementById('brandFilter');
+  if (brandSelect) brandSelect.value = '';
+
+  const typeSelect = document.getElementById('typeFilter');
+  if (typeSelect) typeSelect.value = '';
+
+  syncCategoryRadios('');
+
+  const priceSlider = document.getElementById('priceRangeMax');
+  if (priceSlider) priceSlider.value = String(PRICE_MAX);
+  document.getElementById('priceMaxLabel').textContent = `$${PRICE_MAX}`;
+
+  document.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('active'));
+  document.querySelector('.color-swatch[data-color=""]')?.classList.add('active');
+
+  const sortFilter = document.getElementById('sortFilter');
+  if (sortFilter) sortFilter.value = '0';
+
+  currentPage = 1;
+  loadProducts();
+}
+
+function syncCategoryRadios(typeId) {
+  const value = String(typeId || '');
+  document.querySelectorAll('input[name="categoryFilter"]').forEach((radio) => {
+    radio.checked = radio.value === value;
+  });
 }
 
 function parseUrlParams() {
@@ -68,12 +145,14 @@ function parseUrlParams() {
   filters.search = params.get('search') || '';
   filters.typeId = params.get('typeId') || '';
   filters.brandId = params.get('brandId') || '';
+
   if (params.get('search')) {
-    document.getElementById('searchInput').value = filters.search;
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = filters.search;
+    applySearchSortDefault();
   }
 }
 
-/** Match category name from homepage URL (?type=Mini Bags) to type filter */
 function applyTypeFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const typeName = params.get('type');
@@ -95,6 +174,8 @@ function applyTypeFromUrl() {
   if (filters.typeId && typeSelect) {
     typeSelect.value = filters.typeId;
   }
+
+  syncCategoryRadios(filters.typeId);
 }
 
 async function loadFilters() {
@@ -111,34 +192,73 @@ async function loadFilters() {
     });
 
     const typeSelect = document.getElementById('typeFilter');
+    const categoryList = document.getElementById('categoryFilterList');
+
     types.forEach((t) => {
       const normalized = normalizeType(t);
       typeSelect.innerHTML += `<option value="${normalized.id}">${normalized.name}</option>`;
+
+      if (categoryList) {
+        categoryList.innerHTML += `
+          <li class="filter-radio-item">
+            <label>
+              <input type="radio" name="categoryFilter" value="${normalized.id}">
+              <span>${normalized.name}</span>
+            </label>
+          </li>
+        `;
+      }
     });
   } catch (err) {
     showToast('Could not load filters', 'error');
   }
 }
 
+function filterProductsClientSide(products) {
+  return products.filter((product) => {
+    const p = normalizeProduct(product);
+    if (!p) return false;
+    if (p.price < PRICE_MIN || p.price > filters.maxPrice) return false;
+    return true;
+  });
+}
+
+function updateResultsCount(total, shownCount) {
+  const countEl = document.getElementById('resultsCount');
+  if (!countEl) return;
+
+  if (total === 0) {
+    countEl.textContent = 'Showing 0 products';
+    return;
+  }
+
+  const start = (currentPage - 1) * SHOP_PAGE_SIZE + 1;
+  const end = Math.min(start + shownCount - 1, total);
+  countEl.textContent = `Showing ${start}–${end} of ${total} products`;
+}
+
 async function loadProducts() {
   const grid = document.getElementById('productsGrid');
   const pagination = document.getElementById('pagination');
-  const countEl = document.getElementById('resultsCount');
 
-  grid.innerHTML = renderProductSkeleton(8);
+  grid.innerHTML = renderProductSkeleton(SHOP_PAGE_SIZE);
 
   try {
     const result = await getProducts({
       ...filters,
+      sort: getEffectiveSort(),
       pageIndex: currentPage,
-      pageSize: CONFIG.PAGE_SIZE
+      pageSize: SHOP_PAGE_SIZE
     });
 
-    const products = result.data || result.Data || [];
-    const totalPages = getTotalPages(result);
-    const total = result.totalCount || result.TotalCount || 0;
+    let products = result.data || result.Data || [];
+    const totalBeforeFilter = result.totalCount || result.TotalCount || 0;
+    products = filterProductsClientSide(products);
 
-    countEl.textContent = `${total} product${total !== 1 ? 's' : ''} found`;
+    const totalPages = getTotalPages(result);
+    const total = totalBeforeFilter;
+
+    updateResultsCount(total, products.length);
 
     if (products.length === 0) {
       grid.innerHTML = renderEmptyState(
@@ -151,14 +271,14 @@ async function loadProducts() {
       return;
     }
 
-    grid.innerHTML = products.map((p) => renderProductCard(p)).join('');
+    grid.innerHTML = products.map((p) => renderProductCard(p, { layout: 'shop' })).join('');
     bindProductCardEvents(grid, handleAddToCart);
     observeRevealElements(grid);
 
-    pagination.innerHTML = renderPagination(currentPage, totalPages, (page) => {
+    renderPagination(pagination, currentPage, totalPages, (page) => {
       currentPage = page;
       loadProducts();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById('shop-products')?.scrollIntoView({ behavior: 'smooth' });
     });
   } catch (err) {
     grid.innerHTML = `<p class="text-muted text-center">${err.message}</p>`;
@@ -183,7 +303,7 @@ function renderWishlist() {
   }
 
   const grid = section.querySelector('.wishlist-grid');
-  grid.innerHTML = wishlist.map((p) => renderProductCard(p)).join('');
+  grid.innerHTML = wishlist.map((p) => renderProductCard(p, { layout: 'shop' })).join('');
   bindProductCardEvents(grid, handleAddToCart);
   observeRevealElements(grid);
 }

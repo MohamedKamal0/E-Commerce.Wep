@@ -8,7 +8,7 @@ import {
 } from '../basket.js';
 import { getDeliveryMethods, createOrder, normalizeDeliveryMethod } from '../orders.js';
 import { createPaymentIntent, loadStripeScript, initStripe, confirmPayment } from '../payment.js';
-import { getBasketId, resetBasketId } from '../api.js';
+import { getBasketId, resetBasketId, escapeHtml } from '../api.js';
 
 let selectedDeliveryId = null;
 let stripeInstance = null;
@@ -24,38 +24,79 @@ async function initCheckoutPage() {
 }
 
 async function loadCheckout() {
-  const basket = await getBasket();
+  try {
+    const basket = await getBasket();
 
-  if (!basket.items.length) {
-    window.location.href = '/pages/cart.html';
-    return;
+    if (!basket.items.length) {
+      window.location.href = '/pages/cart.html';
+      return;
+    }
+
+    const subtotal = getBasketSubtotal(basket.items);
+    document.getElementById('checkoutSubtotal').textContent = formatPrice(subtotal);
+    document.getElementById('checkoutTotal').textContent = formatPrice(subtotal);
+
+    const itemsHTML = basket.items.map((item) => `
+      <div class="summary-row">
+        <span>${escapeHtml(item.productName)} × ${item.quantity}</span>
+        <span>${formatPrice(item.price * item.quantity)}</span>
+      </div>
+    `).join('');
+    document.getElementById('checkoutItems').innerHTML = itemsHTML;
+
+    await loadDeliveryMethods();
+
+    try {
+      const { getCurrentUserAddress } = await import('../auth.js');
+      const address = await getCurrentUserAddress();
+      if (address) {
+        document.getElementById('firstName').value = address.fristName || address.FristName || '';
+        document.getElementById('lastName').value = address.lastName || address.LastName || '';
+        document.getElementById('street').value = address.street || address.Street || '';
+        document.getElementById('city').value = address.city || address.City || '';
+      }
+    } catch {
+      // No saved address
+    }
+  } catch (err) {
+    showToast(err.message || 'Could not load checkout', 'error');
+    document.getElementById('deliveryMethods').innerHTML = `
+      <div class="alert alert-danger mb-0">
+        Could not load checkout. ${escapeHtml(err.message || 'Please refresh the page.')}
+      </div>
+    `;
   }
+}
 
-  const subtotal = getBasketSubtotal(basket.items);
-  document.getElementById('checkoutSubtotal').textContent = formatPrice(subtotal);
-  document.getElementById('checkoutTotal').textContent = formatPrice(subtotal);
+async function loadDeliveryMethods() {
+  const container = document.getElementById('deliveryMethods');
+  if (!container) return;
 
-  // Render order items
-  const itemsHTML = basket.items.map((item) => `
-    <div class="summary-row">
-      <span>${item.productName} × ${item.quantity}</span>
-      <span>${formatPrice(item.price * item.quantity)}</span>
-    </div>
-  `).join('');
-  document.getElementById('checkoutItems').innerHTML = itemsHTML;
+  container.innerHTML = '<p class="text-muted mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Loading delivery options...</p>';
 
-  // Load delivery methods
   try {
     const methods = await getDeliveryMethods();
-    const container = document.getElementById('deliveryMethods');
-    container.innerHTML = methods.map((m) => {
+    const list = Array.isArray(methods) ? methods : [];
+
+    if (!list.length) {
+      container.innerHTML = `
+        <div class="empty-state py-3">
+          <p class="text-muted mb-2">No delivery options are available right now.</p>
+          <button type="button" class="btn btn-outline btn-sm" id="retryDeliveryBtn">Try Again</button>
+        </div>
+      `;
+      document.getElementById('retryDeliveryBtn')?.addEventListener('click', loadDeliveryMethods);
+      return;
+    }
+
+    container.innerHTML = list.map((m) => {
       const dm = normalizeDeliveryMethod(m);
       return `
         <label class="delivery-option" data-id="${dm.id}" data-price="${dm.price}">
           <input type="radio" name="delivery" value="${dm.id}">
           <div class="delivery-option-info">
-            <h6>${dm.shortName}</h6>
-            <p>${dm.description} · ${dm.deliveryTime}</p>
+            <h6>${escapeHtml(dm.shortName)}</h6>
+            <p>${escapeHtml(dm.description)} · ${escapeHtml(dm.deliveryTime)}</p>
           </div>
           <span class="delivery-option-price">${formatPrice(dm.price)}</span>
         </label>
@@ -65,31 +106,30 @@ async function loadCheckout() {
     container.querySelectorAll('.delivery-option').forEach((opt) => {
       opt.addEventListener('click', () => selectDelivery(opt));
     });
-  } catch (err) {
-    showToast('Could not load delivery methods. ' + err.message, 'error');
-  }
 
-  // Pre-fill address if available
-  try {
-    const { getCurrentUserAddress } = await import('../auth.js');
-    const address = await getCurrentUserAddress();
-    if (address) {
-      document.getElementById('firstName').value = address.fristName || address.FristName || '';
-      document.getElementById('lastName').value = address.lastName || address.LastName || '';
-      document.getElementById('street').value = address.street || address.Street || '';
-      document.getElementById('city').value = address.city || address.City || '';
+    if (list.length === 1) {
+      await selectDelivery(container.querySelector('.delivery-option'));
     }
-  } catch {
-    // No saved address
+  } catch (err) {
+    container.innerHTML = `
+      <div class="alert alert-danger mb-0">
+        Could not load delivery options. ${escapeHtml(err.message || 'Please try again.')}
+        <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="retryDeliveryBtn">Retry</button>
+      </div>
+    `;
+    document.getElementById('retryDeliveryBtn')?.addEventListener('click', loadDeliveryMethods);
+    showToast('Could not load delivery methods. ' + err.message, 'error');
   }
 }
 
 async function selectDelivery(optionEl) {
+  if (!optionEl) return;
+
   document.querySelectorAll('.delivery-option').forEach((o) => o.classList.remove('selected'));
   optionEl.classList.add('selected');
   optionEl.querySelector('input').checked = true;
 
-  selectedDeliveryId = parseInt(optionEl.dataset.id);
+  selectedDeliveryId = parseInt(optionEl.dataset.id, 10);
   const shippingPrice = parseFloat(optionEl.dataset.price);
 
   document.getElementById('checkoutShipping').textContent = formatPrice(shippingPrice);
@@ -136,7 +176,6 @@ async function handleCheckout(e) {
   try {
     const basketId = getBasketId();
 
-    // Create payment intent
     const paymentBasket = await createPaymentIntent(basketId);
     const clientSecret = paymentBasket.clientSecret || paymentBasket.ClientSecret;
 
@@ -144,7 +183,6 @@ async function handleCheckout(e) {
       throw new Error('Could not initialize payment');
     }
 
-    // Initialize Stripe if not already
     await loadStripeScript();
 
     if (!stripeInstance) {
@@ -154,10 +192,8 @@ async function handleCheckout(e) {
       paymentElement.mount('#payment-element');
     }
 
-    // Confirm payment
     await confirmPayment(stripeInstance, elementsInstance);
 
-    // Create order
     await createOrder({
       basketId,
       deliveryMethodId: selectedDeliveryId,

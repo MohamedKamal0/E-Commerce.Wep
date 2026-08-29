@@ -1,5 +1,7 @@
 using DomainLayre.Exceptions;
+using DomainLayre.Models;
 using Microsoft.AspNetCore.Http;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PresentationLayer.Helpers
 {
@@ -48,13 +50,17 @@ namespace PresentationLayer.Helpers
 
         private static async Task<string> SaveValidatedFileAsync(IFormFile file, string webRootPath)
         {
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            var fileName = $"{Guid.NewGuid()}{extension}";
-            var directory = Path.Combine(webRootPath, "images", "products");
-            Directory.CreateDirectory(directory);
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();//???? ?? ????? ??? ????????? ?????? ??????? jpg 
+            var fileName = $"{Guid.NewGuid()}{extension}";//???? ?? ??? ????? ???? Guid
+                                                         //????? ????? ?? ???? ??? ??? ???? ?????? ??????? ???? ?????? ??? ??? ????? 
+            var directory = Path.Combine(webRootPath, "images", "products");//?? ?????? ??? ???? ??? ??????? ????  ?????????
+                                                                            //C:\Projects\MyStore\wwwroot\images\products
+            Directory.CreateDirectory(directory);//?? ??? folder ?? ?????? ?????.
 
-            var fullPath = Path.Combine(directory, fileName);
-            await using var stream = new FileStream(fullPath, FileMode.Create);
+            var fullPath = Path.Combine(directory, fileName);//directory =C:\Projects\MyStore\wwwroot\images\products
+                                                             //fileName =abc123.jpg
+                                                             //fullPath =C:\Projects\MyStore\wwwroot\images\products\abc123.jpg
+                    await using var stream = new FileStream(fullPath, FileMode.Create);//
             await file.CopyToAsync(stream);
 
             return $"/images/products/{fileName}";

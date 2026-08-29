@@ -1,22 +1,22 @@
 /**
- * Product details page initialization
+ * Product details page — multi-image gallery with thumbnails and prev/next navigation
  */
 import {
   initPage, showToast, initQuantitySelector, renderProductCard,
   bindProductCardEvents, showLoading, observeRevealElements
 } from '../ui.js';
 import {
-  getProductById, normalizeProduct, addRecentlyViewed,
+  getProductById, normalizeProduct, getProductImages, addRecentlyViewed,
   getRelatedProducts, toggleWishlist, isInWishlist
 } from '../products.js';
 import { addToCart } from '../basket.js';
-import { resolveImageUrl, formatPrice, productImageAttrs } from '../api.js';
+import { resolveImageUrl, formatPrice, productImageAttrs, escapeHtml } from '../api.js';
 
 async function initProductDetailsPage() {
   await initPage();
 
   const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id'));
+  const id = parseInt(params.get('id'), 10);
 
   if (!id) {
     window.location.href = '/pages/shop.html';
@@ -29,74 +29,31 @@ async function initProductDetailsPage() {
   try {
     const product = await getProductById(id);
     const p = normalizeProduct(product);
+    const images = getProductImages(product);
     addRecentlyViewed(p);
 
     document.title = `${p.name} — Crochet Atelier`;
-
-    const galleryUrls = p.pictureUrls?.length ? p.pictureUrls : (p.pictureUrl ? [p.pictureUrl] : []);
 
     container.innerHTML = `
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb-custom">
           <li><a href="/pages/index.html">Home</a></li>
           <li><a href="/pages/shop.html">Shop</a></li>
-          <li class="active">${p.name}</li>
+          <li class="active">${escapeHtml(p.name)}</li>
         </ol>
       </nav>
 
       <div class="product-detail-grid reveal">
-        <div class="product-gallery">
-          <div class="product-gallery-main" id="galleryMain">
-            <img ${productImageAttrs(galleryUrls[0], p.name)} id="mainImage">
-          </div>
-          <div class="product-gallery-thumbs" id="galleryThumbs">
-            ${galleryUrls.map((url, i) => `
-              <div class="gallery-thumb ${i === 0 ? 'active' : ''}" data-src="${resolveImageUrl(url)}">
-                <img ${productImageAttrs(url, `View ${i + 1}`)}>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="product-detail-info">
-          <span class="product-brand">${p.brandName}</span>
-          <h1>${p.name}</h1>
-          <div class="product-rating mb-3">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-            <span class="rating-count">(32 reviews)</span>
-          </div>
-          <p class="product-price-lg">${formatPrice(p.price)}</p>
-
-          <div class="product-meta">
-            <div class="product-meta-item"><span>Brand</span><strong>${p.brandName}</strong></div>
-            <div class="product-meta-item"><span>Type</span><strong>${p.typeName}</strong></div>
-            <div class="product-meta-item"><span>Handmade</span><strong>Yes</strong></div>
-          </div>
-
-          <p class="product-description">${p.description || 'A beautifully handcrafted crochet bag, made with premium yarn and meticulous attention to detail. Each piece is unique, carrying the warmth and artistry of traditional crochet craftsmanship.'}</p>
-
-          <div class="product-actions">
-            <div class="quantity-selector">
-              <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
-              <input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="100">
-              <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
-            </div>
-            <button type="button" class="btn btn-primary btn-lg" id="addToCartBtn">
-              <i class="fas fa-shopping-bag me-2"></i>Add to Cart
-            </button>
-            <button type="button" class="btn btn-outline btn-lg wishlist-btn-detail ${isInWishlist(p.id) ? 'active' : ''}" id="wishlistBtn">
-              <i class="fas fa-heart"></i>
-            </button>
-          </div>
-        </div>
+        ${renderGalleryMarkup(images, p.name)}
+        ${renderProductInfoMarkup(p)}
       </div>
     `;
 
-    initGallery();
+    initProductGallery(images);
     initQuantitySelector(container.querySelector('.quantity-selector'));
 
     document.getElementById('addToCartBtn').addEventListener('click', async () => {
-      const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+      const qty = parseInt(document.getElementById('qtyInput').value, 10) || 1;
       try {
         await addToCart(p, qty);
         showToast(`${p.name} added to cart!`, 'success');
@@ -114,8 +71,6 @@ async function initProductDetailsPage() {
     });
 
     observeRevealElements(container);
-
-    // Related products
     loadRelatedProducts(p);
     loadRecentlyViewed(p.id);
   } catch (err) {
@@ -123,20 +78,162 @@ async function initProductDetailsPage() {
       <div class="empty-state">
         <div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <h4>Product Not Found</h4>
-        <p>${err.message}</p>
+        <p>${escapeHtml(err.message)}</p>
         <a href="/pages/shop.html" class="btn btn-primary">Back to Shop</a>
       </div>
     `;
   }
 }
 
-function initGallery() {
-  document.querySelectorAll('.gallery-thumb').forEach((thumb) => {
-    thumb.addEventListener('click', () => {
-      document.querySelectorAll('.gallery-thumb').forEach((t) => t.classList.remove('active'));
-      thumb.classList.add('active');
-      document.getElementById('mainImage').src = thumb.dataset.src;
+function renderGalleryMarkup(images, productName) {
+  const hasImages = images.length > 0;
+  const hasMultiple = images.length > 1;
+  const initialUrl = hasImages ? images[0].imageUrl : '';
+  const safeName = escapeHtml(productName);
+  const mainImageMarkup = hasImages
+    ? `<img ${productImageAttrs(initialUrl, productName, { usePlaceholder: false })} id="mainImage" alt="${safeName}">`
+    : `<div class="product-card-no-image product-card-no-image--modal" id="mainImagePlaceholder" aria-label="No product image available"><i class="fas fa-shopping-bag"></i></div>`;
+
+  return `
+    <div class="product-gallery" id="productGallery" data-image-count="${images.length}">
+      <div class="product-gallery-main" id="galleryMain">
+        ${hasMultiple ? `
+          <button type="button" class="gallery-nav gallery-nav-prev" id="galleryPrev" aria-label="Previous image">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          </button>
+        ` : ''}
+        ${mainImageMarkup}
+        ${hasMultiple ? `
+          <button type="button" class="gallery-nav gallery-nav-next" id="galleryNext" aria-label="Next image">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </button>
+        ` : ''}
+        ${hasMultiple ? `<span class="gallery-counter" id="galleryCounter">1 / ${images.length}</span>` : ''}
+      </div>
+      ${hasMultiple ? `
+        <div class="product-gallery-thumbs" id="galleryThumbs" role="tablist" aria-label="Product images">
+          ${images.map((img, index) => `
+            <button
+              type="button"
+              class="gallery-thumb ${index === 0 ? 'active' : ''}"
+              data-index="${index}"
+              data-src="${escapeHtml(resolveImageUrl(img.imageUrl))}"
+              role="tab"
+              aria-selected="${index === 0 ? 'true' : 'false'}"
+              aria-label="View image ${index + 1}"
+            >
+              <img ${productImageAttrs(img.imageUrl, `View ${index + 1}`, { usePlaceholder: false })}>
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderProductInfoMarkup(p) {
+  return `
+    <div class="product-detail-info">
+      <span class="product-brand">${escapeHtml(p.brand)}</span>
+      <h1>${escapeHtml(p.name)}</h1>
+      <p class="product-price-lg">${formatPrice(p.price)}</p>
+
+      <div class="product-meta">
+        <div class="product-meta-item"><span>Brand</span><strong>${escapeHtml(p.brand)}</strong></div>
+        <div class="product-meta-item"><span>Type</span><strong>${escapeHtml(p.type)}</strong></div>
+      </div>
+
+      <p class="product-description">${escapeHtml(p.description) || 'No description available.'}</p>
+
+      <div class="product-actions">
+        <div class="quantity-selector">
+          <button type="button" class="qty-btn qty-minus"><i class="fas fa-minus"></i></button>
+          <input type="number" class="qty-input" id="qtyInput" value="1" min="1" max="100">
+          <button type="button" class="qty-btn qty-plus"><i class="fas fa-plus"></i></button>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg" id="addToCartBtn">
+          <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+        </button>
+        <button type="button" class="btn btn-outline btn-lg wishlist-btn-detail ${isInWishlist(p.id) ? 'active' : ''}" id="wishlistBtn">
+          <i class="fas fa-heart"></i>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function initProductGallery(images) {
+  const mainImage = document.getElementById('mainImage');
+  const counter = document.getElementById('galleryCounter');
+  const prevBtn = document.getElementById('galleryPrev');
+  const nextBtn = document.getElementById('galleryNext');
+  const thumbs = document.querySelectorAll('.gallery-thumb');
+
+  if (!mainImage) return;
+
+  let selectedIndex = 0;
+
+  function showPlaceholder() {
+    if (mainImage) {
+      mainImage.style.display = 'none';
+    }
+  }
+
+  function selectImage(index) {
+    if (!images.length) {
+      showPlaceholder();
+      return;
+    }
+
+    selectedIndex = ((index % images.length) + images.length) % images.length;
+    const current = images[selectedIndex];
+    mainImage.style.display = '';
+    mainImage.src = resolveImageUrl(current.imageUrl, { placeholder: false });
+    mainImage.dataset.index = String(selectedIndex);
+
+    thumbs.forEach((thumb, i) => {
+      const isActive = i === selectedIndex;
+      thumb.classList.toggle('active', isActive);
+      thumb.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
+
+    if (counter) {
+      counter.textContent = `${selectedIndex + 1} / ${images.length}`;
+    }
+  }
+
+  if (!images.length) {
+    showPlaceholder();
+    return;
+  }
+
+  selectImage(0);
+
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      selectImage(parseInt(thumb.dataset.index, 10));
+    });
+  });
+
+  prevBtn?.addEventListener('click', () => {
+    selectImage(selectedIndex - 1);
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    selectImage(selectedIndex + 1);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!document.getElementById('productGallery')) return;
+    if (images.length <= 1) return;
+
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      selectImage(selectedIndex - 1);
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      selectImage(selectedIndex + 1);
+    }
   });
 }
 
@@ -145,7 +242,7 @@ async function loadRelatedProducts(currentProduct) {
   if (!grid) return;
 
   try {
-    const related = await getRelatedProducts(currentProduct.typeName, currentProduct.id, 4);
+    const related = await getRelatedProducts(currentProduct.type, currentProduct.id, 4);
     if (related.length === 0) {
       document.getElementById('relatedSection').style.display = 'none';
       return;

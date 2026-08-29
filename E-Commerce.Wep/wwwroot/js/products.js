@@ -65,9 +65,9 @@ export async function getRelatedProducts(typeName, excludeId, count = 4) {
   return products.filter((p) => p.id !== excludeId && p.Id !== excludeId).slice(0, count);
 }
 
-/** Search products */
+/** Search products (default: name A–Z) */
 export async function searchProducts(term, pageIndex = 1) {
-  return getProducts({ search: term, pageIndex });
+  return getProducts({ search: term, pageIndex, sort: 1 });
 }
 
 /** Calculate total pages from paginated result */
@@ -77,36 +77,74 @@ export function getTotalPages(result) {
   return Math.ceil(total / size) || 1;
 }
 
+/** True when URL points to a user-uploaded product image under /images/products/ */
+export function isUploadedProductImage(url) {
+  if (!url || typeof url !== 'string') return false;
+  const path = url.trim().replace(/\\/g, '/');
+  return /\/images\/products\/[^/]+$/i.test(path);
+}
+
 /** Normalize product object (handle PascalCase from API) */
 export function normalizeProduct(product) {
   if (!product) return null;
 
+  const brand = product.brand ?? product.Brand ?? product.brandName ?? product.BrandName ?? '';
+  const type = product.type ?? product.Type ?? product.typeName ?? product.TypeName ?? '';
+
+  const rawImages = product.images ?? product.Images;
+  let images = [];
+
+  if (Array.isArray(rawImages) && rawImages.length) {
+    images = rawImages
+      .map((img, index) => ({
+        id: img.id ?? img.Id ?? index,
+        imageUrl: img.imageUrl ?? img.ImageUrl ?? ''
+      }))
+      .filter((img) => isUploadedProductImage(img.imageUrl));
+  }
+
   const rawUrls = product.pictureUrls ?? product.PictureUrls;
-  let pictureUrls = Array.isArray(rawUrls) ? rawUrls.filter(Boolean) : [];
+  let pictureUrls = Array.isArray(rawUrls)
+    ? rawUrls.filter((url) => isUploadedProductImage(url))
+    : [];
 
   const legacyUrl = product.pictureUrl ?? product.PictureUrl;
-  if (pictureUrls.length === 0 && legacyUrl) {
+  if (images.length === 0 && pictureUrls.length === 0 && isUploadedProductImage(legacyUrl)) {
     pictureUrls = [legacyUrl];
   }
 
-  const pictureUrl = pictureUrls[0] ?? legacyUrl ?? '';
+  if (images.length === 0 && pictureUrls.length) {
+    images = pictureUrls.map((url, index) => ({ id: index, imageUrl: url }));
+  }
+
+  pictureUrls = images.map((img) => img.imageUrl);
+  const pictureUrl = pictureUrls[0] ?? '';
 
   return {
     id: product.id ?? product.Id,
     name: product.name ?? product.Name,
-    description: product.description ?? product.Description,
+    description: product.description ?? product.Description ?? '',
+    brand,
+    type,
+    brandName: brand,
+    typeName: type,
+    images,
     pictureUrl,
     pictureUrls,
-    brandName: product.brandName ?? product.BrandName,
-    typeName: product.typeName ?? product.TypeName,
     price: product.price ?? product.Price
   };
+}
+
+/** Product images for gallery — always returns array of { id, imageUrl } */
+export function getProductImages(product) {
+  const normalized = normalizeProduct(product);
+  return normalized?.images ?? [];
 }
 
 /** Primary image URL for cards and cart */
 export function getPrimaryImageUrl(product) {
   const p = normalizeProduct(product);
-  return p?.pictureUrls?.[0] ?? p?.pictureUrl ?? '';
+  return p?.images?.[0]?.imageUrl ?? p?.pictureUrl ?? '';
 }
 
 /** Normalize brand object */

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Shop our collection of premium handmade crochet bags. Filter by brand, type, and discover your perfect artisan piece.">
+  <meta name="description" content="Shop our collection of premium handmade crochet bags. Filter by category, price, and discover your perfect artisan piece.">
   <title>Shop — Crochet Atelier</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,51 +11,89 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/shop.css" rel="stylesheet">
   <link href="/css/responsive.css" rel="stylesheet">
   <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
 </head>
-<body>
+<body class="page-shop">
+  <div class="promo-bar">
+    <span><i class="fas fa-truck" aria-hidden="true"></i> Free Shipping on Orders Over $100</span>
+  </div>
+
   <div id="navbar-root"></div>
   <div id="toast-container"></div>
 
-  <header class="page-header">
-    <div class="container">
-      <h1>Shop Collection</h1>
-      <p>Discover handcrafted crochet bags made with love and artistry</p>
+  <section class="shop-hero">
+    <div class="container shop-hero-inner">
+      <div class="shop-hero-content reveal">
+        <h1>Handcrafted Crochet Bags</h1>
+        <p>Unique designs, thoughtfully handmade for everyday beauty.</p>
+        <a href="#shop-products" class="btn-shop-hero">Shop Collection</a>
+      </div>
+      <div class="shop-hero-media reveal">
+        <img src="/images/products/15be0654-3a9d-4642-91dd-62f2b86d4982.png" alt="Handcrafted crochet bag" loading="eager">
+      </div>
     </div>
-  </header>
+  </section>
 
-  <main class="section pt-0">
+  <main class="shop-page-main" id="shop-products">
     <div class="container">
       <div class="shop-layout">
         <aside class="shop-sidebar reveal">
-          <div class="filter-group">
-            <h6><i class="fas fa-search me-2"></i>Search</h6>
-            <input type="search" id="searchInput" placeholder="Search bags..." aria-label="Search products">
+          <h2 class="shop-filters-title">Filters</h2>
+
+          <div class="filter-block">
+            <h3 class="filter-block-title">Category</h3>
+            <ul class="filter-radio-list" id="categoryFilterList">
+              <li class="filter-radio-item">
+                <label>
+                  <input type="radio" name="categoryFilter" value="" checked>
+                  <span>All</span>
+                </label>
+              </li>
+            </ul>
           </div>
-          <div class="filter-group">
-            <h6><i class="fas fa-tag me-2"></i>Brand</h6>
-            <select id="brandFilter" aria-label="Filter by brand">
-              <option value="">All Brands</option>
-            </select>
+
+          <div class="filter-block">
+            <h3 class="filter-block-title">Price</h3>
+            <div class="price-range-labels">
+              <span id="priceMinLabel">$20</span>
+              <span id="priceMaxLabel">$650</span>
+            </div>
+            <input type="range" class="price-range-slider" id="priceRangeMax" min="20" max="650" value="650" aria-label="Maximum price">
           </div>
-          <div class="filter-group">
-            <h6><i class="fas fa-layer-group me-2"></i>Type</h6>
-            <select id="typeFilter" aria-label="Filter by type">
-              <option value="">All Types</option>
-            </select>
+
+          <div class="filter-block">
+            <h3 class="filter-block-title">Color</h3>
+            <div class="color-swatches" id="colorSwatches">
+              <button type="button" class="color-swatch active" data-color="" style="background:#E8DDD4" aria-label="All colors" title="All"></button>
+              <button type="button" class="color-swatch" data-color="cream" style="background:#F5F0E8" aria-label="Cream" title="Cream"></button>
+              <button type="button" class="color-swatch" data-color="sage" style="background:#A8B5A0" aria-label="Sage" title="Sage"></button>
+              <button type="button" class="color-swatch" data-color="teal" style="background:#7BA3A8" aria-label="Teal" title="Teal"></button>
+              <button type="button" class="color-swatch" data-color="blue" style="background:#8FA4C4" aria-label="Blue" title="Blue"></button>
+              <button type="button" class="color-swatch" data-color="yellow" style="background:#E8D48B" aria-label="Yellow" title="Yellow"></button>
+              <button type="button" class="color-swatch" data-color="pink" style="background:#D6A292" aria-label="Pink" title="Pink"></button>
+              <button type="button" class="color-swatch" data-color="black" style="background:#3E3A39" aria-label="Black" title="Black"></button>
+            </div>
           </div>
-          <button type="button" class="btn btn-outline w-100" id="clearFilters">
-            <i class="fas fa-times me-2"></i>Clear Filters
-          </button>
+
+          <button type="button" class="btn-clear-filters" id="clearFilters">Clear Filters</button>
+
+          <!-- Legacy filters kept for JS compatibility -->
+          <div class="filter-group-legacy">
+            <input type="search" id="searchInput" aria-label="Search products">
+            <select id="brandFilter" aria-label="Filter by brand"><option value="">All Brands</option></select>
+            <select id="typeFilter" aria-label="Filter by type"><option value="">All Types</option></select>
+          </div>
         </aside>
 
         <div class="shop-main">
           <div class="shop-toolbar reveal">
             <p class="shop-results-count" id="resultsCount">Loading products...</p>
             <div class="shop-sort">
+              <label for="sortFilter">Sort by:</label>
               <select id="sortFilter" aria-label="Sort products">
-                <option value="0">Default</option>
+                <option value="0">Newest</option>
                 <option value="1">Name A–Z</option>
                 <option value="2">Name Z–A</option>
                 <option value="3">Price: Low to High</option>
@@ -69,7 +107,6 @@
         </div>
       </div>
 
-      <!-- Wishlist Section -->
       <section class="section" id="wishlistSection" style="display:none;">
         <div class="section-header">
           <span class="section-label">Saved Favorites</span>
