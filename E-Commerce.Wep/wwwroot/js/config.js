@@ -11,7 +11,7 @@ export const CONFIG = {
   RECENTLY_VIEWED_KEY: 'recentlyViewed',
   DARK_MODE_KEY: 'darkMode',
   STRIPE_PUBLISHABLE_KEY: 'pk_test_51TlH481PWhuehHiwyeIh86zLkYyDxExXuuZqSWJGGne0YEqHbHKEaDFHnFfHFOTXRkphyUO6bMT9iML6lVrTL3ux00OoMC12Pg',
-  PAGE_SIZE: 8,
+  PAGE_SIZE: 9,
   PLACEHOLDER_IMAGE: '/images/placeholder-bag.svg',
   HERO_IMAGE: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=1600&q=80',
   CATEGORY_IMAGES: {

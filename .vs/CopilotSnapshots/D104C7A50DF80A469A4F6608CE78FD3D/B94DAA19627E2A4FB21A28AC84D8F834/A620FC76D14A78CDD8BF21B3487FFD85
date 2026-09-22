@@ -1,0 +1,46 @@
+﻿using System.Linq.Expressions;
+using DomainLayre.Models;
+using SheredLayer;
+
+namespace ServiceLayer.Specifications
+{
+    static class ProductQueryFilters
+    {
+        public static Expression<Func<Product, bool>> Create(productQueryParams queryParams)
+        {
+            var brandId = queryParams.BrabdId;
+            var typeId = queryParams.TyepId;
+            var search = string.IsNullOrWhiteSpace(queryParams.SearchValue)
+                ? null
+                : queryParams.SearchValue.Trim().ToLower();
+
+            // Build keywords for the requested color (aliases included)
+            var colorKeywords = ProductColorPalette.KeywordsFor(queryParams.Color ?? string.Empty)
+                .Select(k => k.ToLowerInvariant())
+                .ToArray();
+
+            var minPrice = queryParams.MinPrice;
+            var maxPrice = queryParams.MaxPrice;
+
+            // If colorKeywords is empty -> ignore color filter.
+            if (colorKeywords == null || colorKeywords.Length == 0)
+            {
+                return p =>
+                    (!brandId.HasValue || p.BrandId == brandId)
+                    && (!typeId.HasValue || p.TyepId == typeId)
+                    && (search == null || (p.Name != null && p.Name.ToLower().Contains(search)))
+                    && (!minPrice.HasValue || p.Price >= minPrice.Value)
+                    && (!maxPrice.HasValue || p.Price <= maxPrice.Value);
+            }
+
+            // Otherwise filter by color using the keyword list (case-insensitive).
+            return p =>
+                (!brandId.HasValue || p.BrandId == brandId)
+                && (!typeId.HasValue || p.TyepId == typeId)
+                && (search == null || (p.Name != null && p.Name.ToLower().Contains(search)))
+                && (!minPrice.HasValue || p.Price >= minPrice.Value)
+                && (!maxPrice.HasValue || p.Price <= maxPrice.Value)
+                && (p.Color != null && colorKeywords.Contains(p.Color.ToLower()));
+        }
+    }
+}

@@ -373,6 +373,11 @@
         "IsRequired": false
       },
       {
+        "Name": "Color",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "BrandId",
         "Type": "System.Int32",
         "IsRequired": false
@@ -421,6 +426,21 @@
       {
         "Name": "SearchValue",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Color",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MinPrice",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaxPrice",
+        "Type": "System.Nullable\u00601[[System.Decimal, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {

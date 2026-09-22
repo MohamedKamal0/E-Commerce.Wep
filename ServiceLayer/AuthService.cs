@@ -23,7 +23,8 @@ namespace ServiceLayer
         public async Task<UserDto> GetCurrentUserAsync(string email)
         {
             var User = await _userManager.FindByEmailAsync(email) ?? throw new UserNotFoundException(email);
-            return new UserDto() { DisplayName = User.DisplayName, Email = User.Email, Token = await CreateTokenAsync(User) };
+            return new UserDto()
+            { DisplayName = User.DisplayName, Email = User.Email, Token = await CreateTokenAsync(User) };
         }
         public async Task<IdentityAddressDto> GetCurrentUserAddressAsync(string email)
         {

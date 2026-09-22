@@ -2,6 +2,7 @@ wwwroot\assets\crochet-texture.svg
 wwwroot\css\responsive.css
 wwwroot\css\shop.css
 wwwroot\css\style.css
+wwwroot\images\hero-atelier-poster.jpg
 wwwroot\images\logo.svg
 wwwroot\images\placeholder-bag.svg
 wwwroot\images\products\.gitkeep
@@ -47,11 +48,13 @@ wwwroot\images\products\af34f300-82af-4190-99a0-26f998d7b1f0.png
 wwwroot\images\products\c0305eca-284b-4144-968e-4f5a35c1dd3f.png
 wwwroot\images\products\c8306db5-c9ed-4199-9b10-5538f45dafbf.png
 wwwroot\images\products\e397a249-6dc3-4cb4-bfe0-8f1c7ba4d33a.png
+wwwroot\images\products\e968af62-092b-4517-9c8b-ea94348612cf.png
 wwwroot\images\products\ef21706c-abe8-4f89-b5c2-073069d2a5d6.png
 wwwroot\images\products\f2784943-25de-4649-8cbb-33bbde486375.png
 wwwroot\images\products\f2a56d57-6e3c-472a-a7de-cfed5dc4d1ae.png
 wwwroot\images\products\f40f92c0-d75f-4e7d-ae1c-a0f758e24f3f.png
 wwwroot\images\products\f9d7d1c0-0c54-4d50-a46a-c8150ddba44e.png
+wwwroot\images\shop-hero-crochet-bag.png
 wwwroot\index.html
 wwwroot\js\api.js
 wwwroot\js\auth.js
@@ -86,3 +89,6 @@ wwwroot\pages\product-details.html
 wwwroot\pages\profile.html
 wwwroot\pages\register.html
 wwwroot\pages\shop.html
+wwwroot\videos\build-hero.bat
+wwwroot\videos\hero-atelier.mp4
+wwwroot\videos\hero-filter.txt

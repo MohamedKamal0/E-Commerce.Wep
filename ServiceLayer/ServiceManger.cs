@@ -2,16 +2,18 @@
 using DomainLayre.Contracts;
 using DomainLayre.Models.IdentityModeyol;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ServiceLayerAbstraction;
 
 namespace ServiceLayer
 {
     public class ServiceManger(IUnitOfWorke _unitOfWorke, IMapper _mapper, IBasketRepository basketRepository,
-        IConfiguration _configuration, UserManager<ApplicationUser> _userManager) : IServiceManger
+        IConfiguration _configuration, UserManager<ApplicationUser> _userManager, IDistributedCache _cache, ILogger<ProductService> _logger) : IServiceManger
     {
         private readonly Lazy<IProductService> _LazyProductService =
-            new Lazy<IProductService>(() => new ProductService(_unitOfWorke, _mapper));
+            new Lazy<IProductService>(() => new ProductService(_unitOfWorke, _mapper, _cache, _logger));
         public IProductService productService => _LazyProductService.Value;
 
 

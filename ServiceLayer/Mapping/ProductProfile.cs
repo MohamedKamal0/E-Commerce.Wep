@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DomainLayre;
 using DomainLayre.Models;
+using SheredLayer;
 using SheredLayer.DTOs;
 
 namespace ServiceLayer.Mapping
@@ -21,7 +22,10 @@ namespace ServiceLayer.Mapping
                         .ToList()))
                 .ForMember(dest => dest.PictureUrls, opt => opt.MapFrom(src =>
                     src.Images.OrderBy(i => i.DisplayOrder).Select(i => i.PictureUrl).ToList()))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.GetPrimaryPictureUrl()));
+                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom(src => src.GetPrimaryPictureUrl()))
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src =>
+                    ProductColorPalette.Resolve(src.Color, src.Name, src.Description)))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
             CreateMap<ProductCreateDto, Product>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())

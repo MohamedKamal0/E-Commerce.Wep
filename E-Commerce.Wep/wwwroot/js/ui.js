@@ -534,6 +534,10 @@ export function bindProductCardEvents(container, onAddToCart) {
         const product = await getProductById(id);
         const added = toggleWishlist(product);
         btn.classList.toggle('active', added);
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = added ? 'fas fa-heart' : 'far fa-heart';
+        }
         showToast(added ? 'Added to wishlist' : 'Removed from wishlist', 'success');
         renderNavbar();
       } catch {

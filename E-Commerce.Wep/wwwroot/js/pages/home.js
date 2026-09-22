@@ -9,6 +9,7 @@ import { CONFIG } from '../config.js';
 
 async function initHomePage() {
   await initPage();
+  initHeroVideo();
 
   // Load featured products
   const featuredGrid = document.getElementById('featuredProducts');
@@ -53,6 +54,35 @@ async function initHomePage() {
     e.preventDefault();
     showToast('Thank you for subscribing to our newsletter!', 'success');
     e.target.reset();
+  });
+}
+
+function initHeroVideo() {
+  const video = document.querySelector('.hero-video');
+  if (!video) return;
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) {
+    video.pause();
+    video.removeAttribute('autoplay');
+    video.style.display = 'none';
+    return;
+  }
+
+  video.muted = true;
+  video.playsInline = true;
+
+  const tryPlay = () => {
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  };
+
+  tryPlay();
+  video.addEventListener('canplay', tryPlay, { once: true });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) tryPlay();
   });
 }
 

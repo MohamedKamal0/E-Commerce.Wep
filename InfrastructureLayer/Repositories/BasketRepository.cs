@@ -1,37 +1,37 @@
-﻿using System.Text.Json;
-using DomainLayre.Contracts;
+﻿using DomainLayre.Contracts;
 using DomainLayre.Models;
-using StackExchange.Redis;
+using Microsoft.Extensions.Caching.Distributed;
+using SheredLayer;
 
 namespace InfrastructureLayer.Repositories
 {
-    public class BasketRepository(IConnectionMultiplexer connection) : IBasketRepository
+    public class BasketRepository(IDistributedCache cache) : IBasketRepository
     {
-        private readonly IDatabase _database = connection.GetDatabase();
-
         public async Task<CustomerBasket?> CreateOrUpdateBasket(CustomerBasket basket, TimeSpan? timeTolive = null)
         {
-            var JsonBasket = JsonSerializer.Serialize(basket);
-            var IsCreatedOrUpdated = await _database.StringSetAsync(basket.Id, JsonBasket, timeTolive ?? TimeSpan.FromDays(30));
-            if (!IsCreatedOrUpdated)
-                return null;
-            else
-                return await GetBasketAsync(basket.Id);
+            var options = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(timeTolive ?? TimeSpan.FromDays(30));
+
+            await cache.SetAsync(basket.Id, basket, options);
+
+            return await GetBasketAsync(basket.Id);
         }
 
         public async Task<bool> DeleteBasketAsync(string id)
         {
-            return await _database.KeyDeleteAsync(id);
+            var existing = await cache.GetAsync(id);
+            if (existing is null)
+                return false;
+
+            await cache.RemoveAsync(id);
+            return true;
         }
 
         public async Task<CustomerBasket?> GetBasketAsync(string key)
         {
-
-            var Basket = await _database.StringGetAsync(key);
-            if (Basket.IsNullOrEmpty)
-                return null;
-            else
-                return JsonSerializer.Deserialize<CustomerBasket>(Basket!);
+            var found = cache.TryGetValue(key, out CustomerBasket? basket);
+            return found ? basket : null;
         }
     }
 }
+

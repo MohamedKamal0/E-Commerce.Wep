@@ -19,5 +19,7 @@
         public string BrandName { get; set; } = default!;
         public string TypeName { get; set; } = default!;
         public decimal Price { get; set; }
+        public string Color { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
     }
 }

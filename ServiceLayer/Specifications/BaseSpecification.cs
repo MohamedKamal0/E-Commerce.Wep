@@ -21,8 +21,12 @@ namespace ServiceLayer.Specifications
 
         public Expression<Func<TEntity, object>> OrderBy { get; private set; }
         public Expression<Func<TEntity, object>> OrderByDescending { get; private set; }
+        public List<Expression<Func<TEntity, object>>> ThenByExpressions { get; } = [];
+        public List<Expression<Func<TEntity, object>>> ThenByDescendingExpressions { get; } = [];
         protected void AddOrderBy(Expression<Func<TEntity, object>> orderByexp) => OrderBy = orderByexp;
         protected void AddOrderByDescending(Expression<Func<TEntity, object>> OrderByDescendingexp) => OrderByDescending = OrderByDescendingexp;
+        protected void AddThenBy(Expression<Func<TEntity, object>> thenBy) => ThenByExpressions.Add(thenBy);
+        protected void AddThenByDescending(Expression<Func<TEntity, object>> thenByDescending) => ThenByDescendingExpressions.Add(thenByDescending);
 
 
         public int Take { get; private set; }

@@ -11,6 +11,8 @@ namespace DomainLayre.Models
         public string Name { get; set; }=default!;
         public string Description { get; set; } = default!;
         public decimal Price { get; set; }
+        public string? Color { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public Product_Brand Product_Brand { get; set; } 
         public int BrandId { get; set; } //FK
 

@@ -15,7 +15,6 @@ using Microsoft.IdentityModel.Tokens;
 using ServiceLayer;
 using ServiceLayer.Mapping;
 using ServiceLayerAbstraction;
-using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,8 +36,12 @@ builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
 builder.Services.AddScoped<IUnitOfWorke, UnitOfWorke>();
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 //builder.Services.AddScoped<IBasketService, BasketService>();
-builder.Services.AddSingleton<IConnectionMultiplexer>
-    (ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnstring")));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "YourAppName:";
+});
 builder.Services.AddScoped<IServiceManger, ServiceManger>();
 
 builder.Services.Configure<ApiBehaviorOptions>((Options) =>

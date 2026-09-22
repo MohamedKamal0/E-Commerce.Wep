@@ -612,6 +612,10 @@
                     "type": "number",
                     "format": "double"
                   },
+                  "Color": {
+                    "maxLength": 32,
+                    "type": "string"
+                  },
                   "BrandId": {
                     "maximum": 2147483647,
                     "minimum": 1,
@@ -640,6 +644,9 @@
                   "style": "form"
                 },
                 "Price": {
+                  "style": "form"
+                },
+                "Color": {
                   "style": "form"
                 },
                 "BrandId": {
@@ -708,6 +715,29 @@
             "in": "query",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Color",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "MinPrice",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "MaxPrice",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "format": "double"
             }
           },
           {
@@ -1243,6 +1273,14 @@
           "price": {
             "type": "number",
             "format": "double"
+          },
+          "color": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false
@@ -1288,6 +1326,7 @@
       },
       "ProductSortingOptions": {
         "enum": [
+          0,
           1,
           2,
           3,

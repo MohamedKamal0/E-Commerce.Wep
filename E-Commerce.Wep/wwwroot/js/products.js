@@ -16,18 +16,28 @@ function buildQuery(params) {
   return qs ? `?${qs}` : '';
 }
 
+function parseSortOption(value, fallback = 0) {
+  const sort = Number.parseInt(value, 10);
+  return Number.isInteger(sort) ? sort : fallback;
+}
+
 /**
  * Get paginated products
  * @param {object} params - BrabdId, TyepId, SearchValue, PageIndex, PageSize, sortingOption
  */
 export async function getProducts(params = {}) {
+  const sort = parseSortOption(params.sort, 0);
+  const pageIndex = Math.max(1, parseSortOption(params.pageIndex, 1));
   const query = buildQuery({
     BrabdId: params.brandId,
     TyepId: params.typeId,
     SearchValue: params.search,
-    PageIndex: params.pageIndex || 1,
+    Color: params.color,
+    MinPrice: params.minPrice,
+    MaxPrice: params.maxPrice,
+    PageIndex: pageIndex,
     PageSize: params.pageSize || CONFIG.PAGE_SIZE,
-    sortingOption: params.sort || 0
+    sortingOption: sort
   });
   return apiFetch(`/api/Product${query}`, { auth: false });
 }
@@ -84,6 +94,13 @@ export function isUploadedProductImage(url) {
   return /\/images\/products\/[^/]+$/i.test(path);
 }
 
+function parseCreatedAt(value) {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime()) || date.getFullYear() < 1970) return null;
+  return date;
+}
+
 /** Normalize product object (handle PascalCase from API) */
 export function normalizeProduct(product) {
   if (!product) return null;
@@ -128,10 +145,13 @@ export function normalizeProduct(product) {
     type,
     brandName: brand,
     typeName: type,
+    category: type,
     images,
     pictureUrl,
     pictureUrls,
-    price: product.price ?? product.Price
+    price: Number(product.price ?? product.Price ?? 0),
+    color: String(product.color ?? product.Color ?? '').trim().toLowerCase(),
+    createdAt: parseCreatedAt(product.createdAt ?? product.CreatedAt)
   };
 }
 

@@ -20,7 +20,21 @@
 
   <!-- Hero -->
   <section class="hero-section">
-    <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=1600&q=80')"></div>
+    <div class="hero-bg">
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        preload="metadata"
+        poster="/images/hero-atelier-poster.jpg"
+        aria-hidden="true"
+      >
+        <source src="/videos/hero-atelier.mp4" type="video/mp4">
+      </video>
+    </div>
     <div class="hero-overlay"></div>
     <div class="container">
       <div class="row align-items-center">
@@ -33,11 +47,6 @@
               <a href="/pages/shop.html" class="btn btn-primary btn-lg">Shop Collection</a>
               <a href="/pages/about.html" class="btn btn-outline btn-lg">Our Story</a>
             </div>
-          </div>
-        </div>
-        <div class="col-lg-5 d-none d-lg-block">
-          <div class="hero-image-side reveal">
-            <img src="https://images.unsplash.com/photo-1584917865441-de134e167dde?w=800&q=80" alt="Handmade crochet bag" loading="eager">
           </div>
         </div>
       </div>

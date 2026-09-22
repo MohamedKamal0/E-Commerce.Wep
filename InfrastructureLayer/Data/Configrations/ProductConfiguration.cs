@@ -24,6 +24,12 @@ namespace InfrastructureLayer.Data.Configrations
             builder.Property(p => p.Price)
                 .HasColumnType("decimal(10,2)");
 
+            builder.Property(p => p.Color)
+                .HasMaxLength(32);
+
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
+
         }
     }
 }

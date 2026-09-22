@@ -21,11 +21,21 @@ namespace InfrastructureLayer.Repositories
             }
             if (specification.OrderBy is not null)
             {
-                query = query.OrderBy(specification.OrderBy);
+                var ordered = query.OrderBy(specification.OrderBy);
+                foreach (var thenBy in specification.ThenByExpressions)
+                    ordered = ordered.ThenBy(thenBy);
+                foreach (var thenByDesc in specification.ThenByDescendingExpressions)
+                    ordered = ordered.ThenByDescending(thenByDesc);
+                query = ordered;
             }
-            if (specification.OrderByDescending is not null)
+            else if (specification.OrderByDescending is not null)
             {
-                query = query.OrderByDescending(specification.OrderByDescending);
+                var ordered = query.OrderByDescending(specification.OrderByDescending);
+                foreach (var thenByDesc in specification.ThenByDescendingExpressions)
+                    ordered = ordered.ThenByDescending(thenByDesc);
+                foreach (var thenBy in specification.ThenByExpressions)
+                    ordered = ordered.ThenBy(thenBy);
+                query = ordered;
             }
             if (specification.Includexpressions != null && specification.Includexpressions.Count > 0)
             {

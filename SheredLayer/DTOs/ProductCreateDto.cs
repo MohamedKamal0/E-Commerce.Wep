@@ -21,6 +21,9 @@ namespace SheredLayer.DTOs
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero")]
         public decimal Price { get; set; }
 
+        [MaxLength(32)]
+        public string? Color { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "BrandId is required")]
         public int BrandId { get; set; }
 

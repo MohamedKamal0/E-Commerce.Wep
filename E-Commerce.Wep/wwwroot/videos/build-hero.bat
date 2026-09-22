@@ -1,0 +1,9 @@
+@echo off
+set FF=C:\Users\medok\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-9.0.1-full_build\bin\ffmpeg.exe
+set ASSETS=C:\Users\medok\.cursor\projects\c-Users-medok-source-repos-E-Commerce-Wep\assets
+set OUT=c:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\wwwroot\videos\hero-atelier.mp4
+set POSTER=c:\Users\medok\source\repos\E-Commerce.Wep\E-Commerce.Wep\wwwroot\images\hero-atelier-poster.jpg
+
+"%FF%" -y -loop 1 -framerate 24 -t 0.05 -i "%ASSETS%\hero-atelier-yarn.png" -loop 1 -framerate 24 -t 0.05 -i "%ASSETS%\hero-atelier-hooks.png" -loop 1 -framerate 24 -t 0.05 -i "%ASSETS%\hero-atelier-fabric.png" -loop 1 -framerate 24 -t 0.05 -i "%ASSETS%\hero-atelier-hands.png" -filter_complex "[0:v]scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,zoompan=z='min(1.10,1+0.0007*on)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=144:s=1280x720:fps=24,format=yuv420p[v0];[1:v]scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,zoompan=z='min(1.10,1+0.0007*on)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=144:s=1280x720:fps=24,format=yuv420p[v1];[2:v]scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,zoompan=z='min(1.10,1+0.0007*on)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=144:s=1280x720:fps=24,format=yuv420p[v2];[3:v]scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,zoompan=z='min(1.10,1+0.0007*on)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=144:s=1280x720:fps=24,format=yuv420p[v3];[v0][v1]xfade=transition=fade:duration=1.2:offset=4.8[v01];[v01][v2]xfade=transition=fade:duration=1.2:offset=9.6[v012];[v012][v3]xfade=transition=fade:duration=1.2:offset=14.4[vout]" -map "[vout]" -c:v libx264 -pix_fmt yuv420p -profile:v baseline -level 3.1 -crf 28 -preset medium -movflags +faststart -an "%OUT%"
+
+"%FF%" -y -i "%ASSETS%\hero-atelier-yarn.png" -frames:v 1 -update 1 -q:v 4 "%POSTER%"
