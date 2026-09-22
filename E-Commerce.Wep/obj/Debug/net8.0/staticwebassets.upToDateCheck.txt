@@ -75,6 +75,7 @@ wwwroot\js\pages\register.js
 wwwroot\js\pages\shop.js
 wwwroot\js\payment.js
 wwwroot\js\products.js
+wwwroot\js\shop-filtering.js
 wwwroot\js\ui.js
 wwwroot\pages\404.html
 wwwroot\pages\about.html

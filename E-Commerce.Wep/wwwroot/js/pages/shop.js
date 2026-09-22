@@ -1,272 +1,225 @@
 /**
- * Shop page initialization — listing, filters, sorting, pagination
+ * Shop page initialization
+ *
+ * Filtering/sorting architecture
+ * -------------------------------
+ * The backend (`productQueryParams`) only understands Category (TyepId) and
+ * Brand (BrabdId) as real filters, caps PageSize at 10, and has no concept
+ * of price range or color at all. Price, Color, Search and the visible
+ * pagination therefore cannot be delegated to the server without breaking
+ * as soon as more than one filter is active (mismatched counts, wrong
+ * pages, filters silently overwriting each other).
+ *
+ * To make Category + Color + Price + Search + Sort all compose correctly,
+ * this page:
+ *   1. Asks the server only for Category/Brand (the two things it can
+ *      actually filter), looping pages (deterministically ordered by Name
+ *      so repeated paged requests can never duplicate or drop a row) until
+ *      the whole matching set is retrieved.
+ *   2. Applies Price, Color and Search on that complete set, in-browser.
+ *   3. Sorts the complete filtered set in-browser (so sorting always sorts
+ *      *within* the active filters, never the unfiltered catalog).
+ *   4. Paginates the final filtered+sorted list in-browser for display.
+ *
+ * The product catalog itself is never mutated — everything above works off
+ * fresh copies, so no product is ever duplicated or lost from the source
+ * data, and repeated filter changes always recompute from the same base
+ * catalog snapshot for the current Category/Brand.
  */
 import {
-  initPage, renderProductCard, bindProductCardEvents,
-  renderProductSkeleton, showToast, renderPagination, renderEmptyState,
-  observeRevealElements
+    initPage, renderProductCard, bindProductCardEvents,
+    renderProductSkeleton, showToast, renderPagination, renderEmptyState,
+    observeRevealElements
 } from '../ui.js';
 import {
-  getProducts, getBrands, getTypes, getProductById,
-  normalizeBrand, normalizeType, getTotalPages, getWishlist, normalizeProduct
+    getProducts, getBrands, getTypes, getProductById,
+    normalizeBrand, normalizeType, getWishlist, normalizeProduct
 } from '../products.js';
 import { addToCart } from '../basket.js';
+import { buildCatalogEntries, applyFiltersAndSort, paginate, PRICE_MAX } from '../shop-filtering.js';
 
 const SHOP_PAGE_SIZE = 9;
-const PRICE_SLIDER_MIN = 0;
-const PRICE_SLIDER_MAX = 5000;
-const SORT_NEWEST = 0;
+
+// Backend hard-caps PageSize at 10 (see productQueryParams.MaxPageSize).
+const FETCH_PAGE_SIZE = 10;
+// Safety cap on how many pages we'll aggregate, so a very large catalog
+// can't hang the page in a runaway loop.
+const MAX_FETCH_PAGES = 40;
 
 let currentPage = 1;
-let filters = createDefaultFilters();
+let filters = { search: '', brandId: '', typeId: '', sort: 0, maxPrice: PRICE_MAX, color: '' };
 
-function createDefaultFilters() {
-  return {
-    search: '',
-    brandId: '',
-    typeId: '',
-    sort: SORT_NEWEST,
-    minPrice: PRICE_SLIDER_MIN,
-    maxPrice: PRICE_SLIDER_MAX,
-    color: ''
-  };
-}
-
-function parseSortValue(value) {
-  const sort = Number.parseInt(value, 10);
-  return Number.isInteger(sort) ? sort : SORT_NEWEST;
-}
-
-function getRequestParams() {
-  const minPrice = Number(filters.minPrice);
-  const maxPrice = Number(filters.maxPrice);
-
-  return {
-    search: filters.search,
-    brandId: filters.brandId,
-    typeId: filters.typeId,
-    color: filters.color,
-    minPrice: minPrice > PRICE_SLIDER_MIN ? minPrice : undefined,
-    maxPrice: maxPrice < PRICE_SLIDER_MAX ? maxPrice : undefined,
-    sort: parseSortValue(filters.sort),
-    pageIndex: currentPage,
-    pageSize: SHOP_PAGE_SIZE
-  };
-}
+// Single-slot cache of the normalized+color-tagged product set for the
+// current Category/Brand selection (the only two filters the server
+// applies). Re-used across Price/Color/Search/Sort changes so those stay
+// instant and never re-hit the network; invalidated automatically whenever
+// Category or Brand changes because the cache key changes.
+let catalogCache = { key: null, entries: [] };
 
 async function initShopPage() {
-  await initPage();
-  observeRevealElements(document.querySelector('.shop-hero'));
-  parseUrlParams();
-  await loadFilters();
-  applyTypeFromUrl();
-  syncFilterUi();
-  bindFilterEvents();
-  bindShopSearch();
-  await loadProducts();
+    await initPage();
+    observeRevealElements(document.querySelector('.shop-hero'));
+    parseUrlParams();
+    await loadFilters();
+    applyTypeFromUrl();
+    bindFilterEvents();
+    await loadProducts();
 
-  if (window.location.hash === '#wishlist') {
-    renderWishlist();
-  }
+    if (window.location.hash === '#wishlist') {
+        renderWishlist();
+    }
 }
 
 function bindFilterEvents() {
-  document.getElementById('searchInput')?.addEventListener('input', debounce(() => {
-    filters.search = document.getElementById('searchInput').value.trim();
-    currentPage = 1;
-    loadProducts();
-  }, 400));
+    document.getElementById('searchInput')?.addEventListener('input', debounce(() => {
+        filters.search = document.getElementById('searchInput').value;
+        currentPage = 1;
+        loadProducts();
+    }, 400));
 
-  document.getElementById('brandFilter')?.addEventListener('change', (e) => {
-    filters.brandId = e.target.value;
-    currentPage = 1;
-    loadProducts();
-  });
-
-  document.getElementById('typeFilter')?.addEventListener('change', (e) => {
-    filters.typeId = e.target.value;
-    syncCategoryRadios(e.target.value);
-    currentPage = 1;
-    loadProducts();
-  });
-
-  document.getElementById('categoryFilterList')?.addEventListener('change', (e) => {
-    if (e.target.name !== 'categoryFilter') return;
-    filters.typeId = e.target.value;
-    const typeSelect = document.getElementById('typeFilter');
-    if (typeSelect) typeSelect.value = e.target.value;
-    currentPage = 1;
-    loadProducts();
-  });
-
-  const onPriceInput = () => {
-    syncPriceSliderValues();
-    currentPage = 1;
-    loadProducts();
-  };
-
-  document.getElementById('priceRangeMin')?.addEventListener('input', debounce(onPriceInput, 200));
-  document.getElementById('priceRangeMax')?.addEventListener('input', debounce(onPriceInput, 200));
-
-  document.getElementById('colorSwatches')?.addEventListener('click', (e) => {
-    const swatch = e.target.closest('.color-swatch');
-    if (!swatch) return;
-
-    const color = swatch.dataset.color || '';
-    filters.color = color;
-    document.querySelectorAll('.color-swatch').forEach((item) => {
-      item.classList.toggle('active', item === swatch);
+    document.getElementById('brandFilter')?.addEventListener('change', (e) => {
+        filters.brandId = e.target.value;
+        currentPage = 1;
+        loadProducts();
     });
-    currentPage = 1;
-    loadProducts();
-  });
 
-  document.getElementById('sortFilter')?.addEventListener('change', (e) => {
-    filters.sort = parseSortValue(e.target.value);
-    currentPage = 1;
-    loadProducts();
-  });
+    document.getElementById('typeFilter')?.addEventListener('change', (e) => {
+        filters.typeId = e.target.value;
+        syncCategoryRadios(e.target.value);
+        currentPage = 1;
+        loadProducts();
+    });
 
-  document.getElementById('clearFilters')?.addEventListener('click', resetFilters);
+    document.getElementById('categoryFilterList')?.addEventListener('change', (e) => {
+        if (e.target.name !== 'categoryFilter') return;
+        filters.typeId = e.target.value;
+        const typeSelect = document.getElementById('typeFilter');
+        if (typeSelect) typeSelect.value = e.target.value;
+        currentPage = 1;
+        loadProducts();
+    });
+
+    document.getElementById('priceRangeMax')?.addEventListener('input', debounce((e) => {
+        filters.maxPrice = parseInt(e.target.value, 10) || PRICE_MAX;
+        document.getElementById('priceMaxLabel').textContent = `$${filters.maxPrice}`;
+        currentPage = 1;
+        loadProducts();
+    }, 300));
+
+    document.getElementById('colorSwatches')?.addEventListener('click', (e) => {
+        const swatch = e.target.closest('.color-swatch');
+        if (!swatch) return;
+        document.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('active'));
+        swatch.classList.add('active');
+        filters.color = swatch.dataset.color || '';
+        currentPage = 1;
+        loadProducts();
+    });
+
+    document.getElementById('sortFilter')?.addEventListener('change', (e) => {
+        filters.sort = parseInt(e.target.value, 10) || 0;
+        currentPage = 1;
+        loadProducts();
+    });
+
+    document.getElementById('clearFilters')?.addEventListener('click', resetFilters);
 }
 
 function resetFilters() {
-  filters = createDefaultFilters();
-  currentPage = 1;
-  syncFilterUi();
-  loadProducts();
-}
+    filters = { search: '', brandId: '', typeId: '', sort: 0, maxPrice: PRICE_MAX, color: '' };
 
-function syncFilterUi() {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) searchInput.value = filters.search;
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
 
-  const brandSelect = document.getElementById('brandFilter');
-  if (brandSelect) brandSelect.value = filters.brandId;
+    const brandSelect = document.getElementById('brandFilter');
+    if (brandSelect) brandSelect.value = '';
 
-  const typeSelect = document.getElementById('typeFilter');
-  if (typeSelect) typeSelect.value = filters.typeId;
+    const typeSelect = document.getElementById('typeFilter');
+    if (typeSelect) typeSelect.value = '';
 
-  syncCategoryRadios(filters.typeId);
+    syncCategoryRadios('');
 
-  const minSlider = document.getElementById('priceRangeMin');
-  const maxSlider = document.getElementById('priceRangeMax');
-  if (minSlider) minSlider.value = String(filters.minPrice);
-  if (maxSlider) maxSlider.value = String(filters.maxPrice);
-  updatePriceLabels();
+    const priceSlider = document.getElementById('priceRangeMax');
+    if (priceSlider) priceSlider.value = String(PRICE_MAX);
+    const priceMaxLabel = document.getElementById('priceMaxLabel');
+    if (priceMaxLabel) priceMaxLabel.textContent = `$${PRICE_MAX}`;
 
-  document.querySelectorAll('.color-swatch').forEach((swatch) => {
-    swatch.classList.toggle('active', (swatch.dataset.color || '') === filters.color);
-  });
+    document.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('active'));
+    document.querySelector('.color-swatch[data-color=""]')?.classList.add('active');
 
-  const sortFilter = document.getElementById('sortFilter');
-  if (sortFilter) sortFilter.value = String(filters.sort);
-}
+    const sortFilter = document.getElementById('sortFilter');
+    if (sortFilter) sortFilter.value = '0';
 
-function syncPriceSliderValues() {
-  const minSlider = document.getElementById('priceRangeMin');
-  const maxSlider = document.getElementById('priceRangeMax');
-  if (!minSlider || !maxSlider) return;
-
-  let minValue = Number.parseInt(minSlider.value, 10);
-  let maxValue = Number.parseInt(maxSlider.value, 10);
-  if (Number.isNaN(minValue)) minValue = PRICE_SLIDER_MIN;
-  if (Number.isNaN(maxValue)) maxValue = PRICE_SLIDER_MAX;
-
-  if (minValue > maxValue) {
-    const previousMax = filters.maxPrice;
-    if (minValue !== filters.minPrice) {
-      maxValue = minValue;
-      maxSlider.value = String(maxValue);
-    } else {
-      minValue = previousMax;
-      minSlider.value = String(minValue);
-      maxValue = Number.parseInt(maxSlider.value, 10);
-    }
-  }
-
-  filters.minPrice = minValue;
-  filters.maxPrice = maxValue;
-  updatePriceLabels();
-}
-
-function updatePriceLabels() {
-  const minLabel = document.getElementById('priceMinLabel');
-  const maxLabel = document.getElementById('priceMaxLabel');
-  if (minLabel) minLabel.textContent = `$${filters.minPrice}`;
-  if (maxLabel) maxLabel.textContent = `$${filters.maxPrice}`;
+    currentPage = 1;
+    loadProducts();
 }
 
 function syncCategoryRadios(typeId) {
-  const value = String(typeId || '');
-  document.querySelectorAll('input[name="categoryFilter"]').forEach((radio) => {
-    radio.checked = radio.value === value;
-  });
+    const value = String(typeId || '');
+    document.querySelectorAll('input[name="categoryFilter"]').forEach((radio) => {
+        radio.checked = radio.value === value;
+    });
 }
 
 function parseUrlParams() {
-  const params = new URLSearchParams(window.location.search);
-  filters.search = params.get('search') || '';
-  filters.typeId = params.get('typeId') || '';
-  filters.brandId = params.get('brandId') || '';
-  filters.color = (params.get('color') || '').toLowerCase();
+    const params = new URLSearchParams(window.location.search);
+    filters.search = params.get('search') || '';
+    filters.typeId = params.get('typeId') || '';
+    filters.brandId = params.get('brandId') || '';
 
-  const minPrice = Number.parseInt(params.get('minPrice'), 10);
-  const maxPrice = Number.parseInt(params.get('maxPrice'), 10);
-  if (!Number.isNaN(minPrice)) filters.minPrice = minPrice;
-  if (!Number.isNaN(maxPrice)) filters.maxPrice = maxPrice;
-
-  const sort = Number.parseInt(params.get('sort'), 10);
-  if (Number.isInteger(sort)) filters.sort = sort;
+    if (params.get('search')) {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = filters.search;
+    }
 }
 
 function applyTypeFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const typeName = params.get('type');
-  const typeSelect = document.getElementById('typeFilter');
+    const params = new URLSearchParams(window.location.search);
+    const typeName = params.get('type');
+    const typeSelect = document.getElementById('typeFilter');
 
-  if (typeName && typeSelect) {
-    const option = [...typeSelect.options].find((o) => o.textContent === typeName);
-    if (option) {
-      filters.typeId = option.value;
-      typeSelect.value = option.value;
+    if (typeName && typeSelect) {
+        const option = [...typeSelect.options].find((o) => o.textContent === typeName);
+        if (option) {
+            filters.typeId = option.value;
+            typeSelect.value = option.value;
+        }
     }
-  }
 
-  if (filters.brandId) {
-    const brandSelect = document.getElementById('brandFilter');
-    if (brandSelect) brandSelect.value = filters.brandId;
-  }
+    if (filters.brandId) {
+        const brandSelect = document.getElementById('brandFilter');
+        if (brandSelect) brandSelect.value = filters.brandId;
+    }
 
-  if (filters.typeId && typeSelect) {
-    typeSelect.value = filters.typeId;
-  }
+    if (filters.typeId && typeSelect) {
+        typeSelect.value = filters.typeId;
+    }
 
-  syncCategoryRadios(filters.typeId);
+    syncCategoryRadios(filters.typeId);
 }
 
 async function loadFilters() {
-  try {
-    const [brandsResult, types] = await Promise.all([
-      getBrands({ pageSize: 50 }),
-      getTypes()
-    ]);
+    try {
+        const [brandsResult, types] = await Promise.all([
+            getBrands({ pageSize: 50 }),
+            getTypes()
+        ]);
 
-    const brands = (brandsResult.data || brandsResult.Data || brandsResult || []).map(normalizeBrand);
-    const brandSelect = document.getElementById('brandFilter');
-    brands.forEach((b) => {
-      brandSelect.innerHTML += `<option value="${b.id}">${b.name}</option>`;
-    });
+        const brands = (brandsResult.data || brandsResult.Data || brandsResult || []).map(normalizeBrand);
+        const brandSelect = document.getElementById('brandFilter');
+        brands.forEach((b) => {
+            brandSelect.innerHTML += `<option value="${b.id}">${b.name}</option>`;
+        });
 
-    const typeSelect = document.getElementById('typeFilter');
-    const categoryList = document.getElementById('categoryFilterList');
+        const typeSelect = document.getElementById('typeFilter');
+        const categoryList = document.getElementById('categoryFilterList');
 
-    types.forEach((t) => {
-      const normalized = normalizeType(t);
-      typeSelect.innerHTML += `<option value="${normalized.id}">${normalized.name}</option>`;
+        types.forEach((t) => {
+            const normalized = normalizeType(t);
+            typeSelect.innerHTML += `<option value="${normalized.id}">${normalized.name}</option>`;
 
-      if (categoryList) {
-        categoryList.innerHTML += `
+            if (categoryList) {
+                categoryList.innerHTML += `
           <li class="filter-radio-item">
             <label>
               <input type="radio" name="categoryFilter" value="${normalized.id}">
@@ -274,199 +227,150 @@ async function loadFilters() {
             </label>
           </li>
         `;
-      }
-    });
-  } catch (err) {
-    showToast('Could not load filters', 'error');
-  }
+            }
+        });
+    } catch (err) {
+        showToast('Could not load filters', 'error');
+    }
 }
 
-function updateResultsCount(total, shownCount) {
-  const countEl = document.getElementById('resultsCount');
-  if (!countEl) return;
+/**
+ * Fetch every product matching the current Category/Brand selection
+ * (the only filters the API supports), looping pages with a deterministic
+ * server-side sort so aggregation can't duplicate or skip rows. Cached per
+ * Category+Brand combination.
+ */
+async function fetchCatalog(typeId, brandId) {
+    const key = `${typeId || ''}|${brandId || ''}`;
+    if (catalogCache.key === key) return catalogCache.entries;
 
-  if (total === 0 || shownCount === 0) {
-    countEl.textContent = 'Showing 0 products';
-    return;
-  }
+    const all = [];
+    let pageIndex = 1;
+    let totalCount = Infinity;
 
-  const start = (currentPage - 1) * SHOP_PAGE_SIZE + 1;
-  const end = Math.min(start + shownCount - 1, total);
-  countEl.textContent = `Showing ${start}–${end} of ${total} products`;
+    while (all.length < totalCount && pageIndex <= MAX_FETCH_PAGES) {
+        const result = await getProducts({
+            typeId,
+            brandId,
+            sort: 1, // NameASC — the one option the backend always orders deterministically
+            pageIndex,
+            pageSize: FETCH_PAGE_SIZE
+        });
+
+        const pageProducts = result.data || result.Data || [];
+        totalCount = result.totalCount ?? result.TotalCount ?? pageProducts.length;
+
+        if (pageProducts.length === 0) break;
+        all.push(...pageProducts);
+        pageIndex += 1;
+    }
+
+    const entries = buildCatalogEntries(all, normalizeProduct);
+    catalogCache = { key, entries };
+    return entries;
 }
 
-function uniqueProducts(products) {
-  if (!Array.isArray(products)) return [];
+function updateResultsCount(total, shownCount, startIndex) {
+    const countEl = document.getElementById('resultsCount');
+    if (!countEl) return;
 
-  const seen = new Set();
-  const unique = [];
+    if (total === 0) {
+        countEl.textContent = 'Showing 0 products';
+        return;
+    }
 
-  products.forEach((product, index) => {
-    const normalized = normalizeProduct(product);
-    const key = normalized?.id != null && normalized.id !== ''
-      ? `id:${normalized.id}`
-      : `row:${index}`;
-    if (seen.has(key)) return;
-    seen.add(key);
-    unique.push(product);
-  });
-
-  return unique;
-}
-
-function bindShopSearch() {
-  const applySearch = (rawValue) => {
-    const term = String(rawValue ?? '').trim();
-    filters.search = term;
-    const shopInput = document.getElementById('searchInput');
-    if (shopInput && shopInput.value !== term) shopInput.value = term;
-    currentPage = 1;
-    loadProducts();
-  };
-
-  document.getElementById('globalSearchForm')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const term = document.getElementById('globalSearchInput')?.value.trim() || '';
-    document.getElementById('searchOverlay')?.classList.remove('active');
-    applySearch(term);
-  }, true);
+    const start = startIndex + 1;
+    const end = startIndex + shownCount;
+    countEl.textContent = `Showing ${start}–${end} of ${total} products`;
 }
 
 async function loadProducts() {
-  const grid = document.getElementById('productsGrid');
-  const pagination = document.getElementById('pagination');
-  if (!grid) return;
+    const grid = document.getElementById('productsGrid');
+    const pagination = document.getElementById('pagination');
+    if (!grid) return;
 
-  grid.innerHTML = renderProductSkeleton(SHOP_PAGE_SIZE);
+    grid.innerHTML = renderProductSkeleton(SHOP_PAGE_SIZE);
 
-  try {
-    const result = await getProducts(getRequestParams());
-    if (!result) throw new Error('No product data returned');
-    const source = result.data || result.Data || [];
-    const products = uniqueProducts(Array.isArray(source) ? source.slice() : []);
-    const total = result.totalCount || result.TotalCount || 0;
-    const totalPages = getTotalPages(result);
+    try {
+        const catalog = await fetchCatalog(filters.typeId, filters.brandId);
+        const filtered = applyFiltersAndSort(catalog, filters);
 
-    updateResultsCount(total, products.length);
+        // Keep the current page in range if filtering just shrank the result set
+        // (e.g. user was on page 3, then narrowed the filters).
+        const { total, totalPages, page, start, pageEntries } = paginate(filtered, currentPage, SHOP_PAGE_SIZE);
+        currentPage = page;
 
-    if (products.length === 0) {
-      grid.innerHTML = renderEmptyState(
-        'fa-search',
-        'No Products Found',
-        'Try adjusting your search or filters.',
-        '<button type="button" class="btn btn-primary" id="emptyClearFilters">Clear Filters</button>'
-      );
-      document.getElementById('emptyClearFilters')?.addEventListener('click', resetFilters);
-      if (pagination) pagination.innerHTML = '';
-      return;
+        updateResultsCount(total, pageEntries.length, start);
+
+        if (total === 0) {
+            grid.innerHTML = renderEmptyState(
+                'fa-search',
+                'No Products Found',
+                'Try adjusting your search or filters.',
+                '<a href="/pages/shop.html" class="btn btn-primary">View All Products</a>'
+            );
+            if (pagination) pagination.innerHTML = '';
+            return;
+        }
+
+        grid.innerHTML = pageEntries.map((entry) => renderProductCard(entry.raw, { layout: 'shop' })).join('');
+        bindProductCardEvents(grid, handleAddToCart);
+        observeRevealElements(grid);
+
+        if (pagination) {
+            renderPagination(pagination, currentPage, totalPages, (page) => {
+                currentPage = page;
+                loadProducts();
+                document.getElementById('shop-products')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+    } catch (err) {
+        grid.innerHTML = `<p class="text-muted text-center">${err.message}</p>`;
+        if (pagination) pagination.innerHTML = '';
     }
-
-    grid.innerHTML = products.map((p) => renderProductCard(p, { layout: 'shop' })).join('');
-    bindProductCardEvents(grid, handleAddToCart);
-    observeRevealElements(grid);
-
-    renderPagination(pagination, currentPage, totalPages, (page) => {
-      currentPage = page;
-      loadProducts();
-      document.getElementById('shop-products')?.scrollIntoView({ behavior: 'smooth' });
-    });
-  } catch (err) {
-    grid.innerHTML = renderEmptyState(
-      'fa-exclamation-circle',
-      'Unable to load products',
-      err.message || 'Please try again.',
-      '<button type="button" class="btn btn-primary" id="retryLoadProducts">Try Again</button>'
-    );
-    document.getElementById('retryLoadProducts')?.addEventListener('click', loadProducts);
-    if (pagination) pagination.innerHTML = '';
-  }
 }
 
 function renderWishlist() {
-  const wishlist = getWishlist();
-  const section = document.getElementById('wishlistSection');
-  if (!section) return;
+    const wishlist = getWishlist();
+    const section = document.getElementById('wishlistSection');
+    if (!section) return;
 
-  section.style.display = 'block';
+    section.style.display = 'block';
 
-  if (wishlist.length === 0) {
-    section.querySelector('.wishlist-grid').innerHTML = renderEmptyState(
-      'fa-heart',
-      'Your Wishlist is Empty',
-      'Save your favorite bags for later.',
-      '<a href="/pages/shop.html" class="btn btn-primary">Browse Shop</a>'
-    );
-    return;
-  }
+    if (wishlist.length === 0) {
+        section.querySelector('.wishlist-grid').innerHTML = renderEmptyState(
+            'fa-heart',
+            'Your Wishlist is Empty',
+            'Save your favorite bags for later.',
+            '<a href="/pages/shop.html" class="btn btn-primary">Browse Shop</a>'
+        );
+        return;
+    }
 
-  const grid = section.querySelector('.wishlist-grid');
-  grid.innerHTML = wishlist.map((p) => renderProductCard(p, { layout: 'shop' })).join('');
-  bindProductCardEvents(grid, handleAddToCart);
-  observeRevealElements(grid);
+    const grid = section.querySelector('.wishlist-grid');
+    grid.innerHTML = wishlist.map((p) => renderProductCard(p, { layout: 'shop' })).join('');
+    bindProductCardEvents(grid, handleAddToCart);
+    observeRevealElements(grid);
 }
 
 async function handleAddToCart(productId) {
-  try {
-    const product = await getProductById(productId);
-    await addToCart(product);
-    showToast(`${normalizeProduct(product).name} added to cart!`, 'success');
-    const { renderNavbar } = await import('../ui.js');
-    await renderNavbar();
-  } catch (err) {
-    showToast(err.message, 'error');
-  }
+    try {
+        const product = await getProductById(productId);
+        await addToCart(product);
+        showToast(`${normalizeProduct(product).name} added to cart!`, 'success');
+        const { renderNavbar } = await import('../ui.js');
+        await renderNavbar();
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
 }
 
 function debounce(fn, delay) {
-  let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
 }
 
 document.addEventListener('DOMContentLoaded', initShopPage);
-// -- only the affected functions are shown (rest of file unchanged) --
-
-function syncFilterUi() {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) searchInput.value = filters.search;
-
-  const brandSelect = document.getElementById('brandFilter');
-  if (brandSelect) brandSelect.value = filters.brandId;
-
-  const typeSelect = document.getElementById('typeFilter');
-  if (typeSelect) typeSelect.value = filters.typeId;
-
-  syncCategoryRadios(filters.typeId);
-
-  const minSlider = document.getElementById('priceRangeMin');
-  const maxSlider = document.getElementById('priceRangeMax');
-
-  // Ensure sliders always receive numeric values (fallback to constants)
-  const safeMin = (filters.minPrice !== undefined && filters.minPrice !== null) ? Number(filters.minPrice) : PRICE_SLIDER_MIN;
-  const safeMax = (filters.maxPrice !== undefined && filters.maxPrice !== null) ? Number(filters.maxPrice) : PRICE_SLIDER_MAX;
-
-  if (minSlider) minSlider.value = String(isNaN(safeMin) ? PRICE_SLIDER_MIN : safeMin);
-  if (maxSlider) maxSlider.value = String(isNaN(safeMax) ? PRICE_SLIDER_MAX : safeMax);
-  updatePriceLabels();
-
-  document.querySelectorAll('.color-swatch').forEach((swatch) => {
-    swatch.classList.toggle('active', (swatch.dataset.color || '') === (filters.color || ''));
-  });
-
-  const sortFilter = document.getElementById('sortFilter');
-  if (sortFilter) sortFilter.value = String(filters.sort);
-}
-
-function updatePriceLabels() {
-  const minLabel = document.getElementById('priceMinLabel');
-  const maxLabel = document.getElementById('priceMaxLabel');
-
-  const minValue = (filters.minPrice !== undefined && filters.minPrice !== null) ? Number(filters.minPrice) : PRICE_SLIDER_MIN;
-  const maxValue = (filters.maxPrice !== undefined && filters.maxPrice !== null) ? Number(filters.maxPrice) : PRICE_SLIDER_MAX;
-
-  if (minLabel) minLabel.textContent = `$${isNaN(minValue) ? PRICE_SLIDER_MIN : minValue}`;
-  if (maxLabel) maxLabel.textContent = `$${isNaN(maxValue) ? PRICE_SLIDER_MAX : maxValue}`;
-}
