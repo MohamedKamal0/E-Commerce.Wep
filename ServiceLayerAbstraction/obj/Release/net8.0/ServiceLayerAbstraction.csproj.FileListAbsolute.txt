@@ -1,0 +1,16 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\ServiceLayerAbstraction.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\ServiceLayerAbstraction.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\SheredLayer.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.csproj.AssemblyReference.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.AssemblyInfoInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.AssemblyInfo.cs
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.csproj.CoreCompileInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceL.D5C65B2C.Up2Date
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\refint\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ServiceLayerAbstraction.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\ref\ServiceLayerAbstraction.dll

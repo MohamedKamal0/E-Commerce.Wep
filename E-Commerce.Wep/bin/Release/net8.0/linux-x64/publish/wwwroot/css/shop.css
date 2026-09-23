@@ -1,0 +1,510 @@
+/* ============================================================
+   Shop Page — Crochet Atelier Boutique Layout
+   ============================================================ */
+
+.page-shop {
+  --shop-primary: #D6A292;
+  --shop-primary-dark: #C48272;
+  --shop-cream: #F9F5F2;
+  --shop-hero-bg: #F3EBE3;
+  --promo-height: 38px;
+  --bg: var(--shop-cream);
+  background: var(--shop-cream);
+  padding-top: calc(var(--promo-height) + var(--navbar-height));
+}
+
+/* ─── Promo Bar ─── */
+.promo-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1060;
+  height: var(--promo-height);
+  background: var(--shop-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.promo-bar i {
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* ─── Shop Navbar Overrides ─── */
+.page-shop .navbar-custom {
+  top: var(--promo-height);
+  background: #fff;
+  border-bottom: 1px solid #EDE4DC;
+  box-shadow: none;
+}
+
+.page-shop .navbar-custom.scrolled {
+  background: #fff;
+  backdrop-filter: none;
+}
+
+.page-shop .navbar-nav .nav-link {
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+}
+
+.page-shop .navbar-nav .nav-link::after {
+  height: 1px;
+  bottom: 2px;
+  background: var(--text-dark);
+}
+
+.page-shop .navbar-nav .nav-link.active::after {
+  width: 100%;
+}
+
+.page-shop .brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.page-shop .brand-tagline {
+  font-family: var(--font-body);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.page-shop #darkModeToggle,
+.page-shop .wishlist-link {
+  display: none;
+}
+
+.page-shop .btn-primary,
+.page-shop .shop-add-to-cart-btn {
+  background: var(--shop-primary);
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.page-shop .btn-primary:hover,
+.page-shop .shop-add-to-cart-btn:hover {
+  background: var(--shop-primary-dark);
+  transform: none;
+  box-shadow: none;
+}
+
+.page-shop .page-item.active .page-link {
+  background: var(--shop-primary-dark);
+}
+
+/* ─── Hero ─── */
+.shop-hero {
+  background: var(--shop-hero-bg);
+  padding: 3.5rem 0;
+  margin-bottom: 0;
+}
+
+.shop-hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.shop-hero-content h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.shop-hero-content p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 420px;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+.btn-shop-hero {
+  display: inline-block;
+  background: var(--shop-primary);
+  color: #fff !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.95rem 2rem;
+  border-radius: 0;
+  transition: var(--transition);
+}
+
+.btn-shop-hero:hover {
+  background: var(--shop-primary-dark);
+  color: #fff !important;
+  transform: none;
+}
+
+.shop-hero-media {
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: #fff;
+}
+
+.shop-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ─── Shop Main Section ─── */
+.shop-page-main {
+  padding: 3rem 0 4rem;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* ─── Sidebar Filters ─── */
+.shop-sidebar {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  position: sticky;
+  top: calc(var(--promo-height) + var(--navbar-height) + 1.5rem);
+}
+
+.shop-filters-title {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #E8DDD4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.shop-filters-title::after {
+  content: '✦';
+  font-size: 0.65rem;
+  color: var(--shop-primary);
+}
+
+.filter-block {
+  margin-bottom: 2rem;
+}
+
+.filter-block-title {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.filter-radio-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filter-radio-item {
+  margin-bottom: 0.65rem;
+}
+
+.filter-radio-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.filter-radio-item label:hover,
+.filter-radio-item input:checked + span {
+  color: var(--text-dark);
+}
+
+.filter-radio-item input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #CFC4BB;
+  border-radius: 50%;
+  margin: 0;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.filter-radio-item input:checked {
+  border-color: var(--shop-primary);
+}
+
+.filter-radio-item input:checked::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--shop-primary);
+  border-radius: 50%;
+}
+
+.price-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.price-range-slider {
+  width: 100%;
+  accent-color: var(--shop-primary);
+  cursor: pointer;
+}
+
+.price-range-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.color-swatch:hover,
+.color-swatch.active {
+  border-color: var(--text-dark);
+  transform: scale(1.08);
+}
+
+.btn-clear-filters {
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid #D8CEC4;
+  color: var(--text-dark);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.85rem 1rem;
+  border-radius: 0;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 0.5rem;
+}
+
+.btn-clear-filters:hover {
+  border-color: var(--shop-primary);
+  color: var(--shop-primary);
+  background: transparent;
+}
+
+/* Hidden legacy filters */
+.shop-sidebar .filter-group-legacy {
+  display: none;
+}
+
+/* ─── Toolbar ─── */
+.shop-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #E8DDD4;
+}
+
+.shop-results-count {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.shop-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.shop-sort select {
+  border: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ─── Product Grid ─── */
+.page-shop .products-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem 1.75rem;
+}
+
+/* ─── Shop Product Card ─── */
+.page-shop .shop-product-card {
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  cursor: default;
+}
+
+.page-shop .shop-product-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.page-shop .shop-product-card .product-card-image {
+  background: #fff;
+  margin-bottom: 1rem;
+}
+
+.page-shop .shop-product-card .product-card-overlay,
+.page-shop .shop-product-card .product-badge {
+  display: none !important;
+}
+
+.page-shop .shop-product-card .wishlist-btn {
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+.page-shop .shop-product-card .wishlist-btn:hover,
+.page-shop .shop-product-card .wishlist-btn.active {
+  background: transparent;
+  color: var(--shop-primary);
+}
+
+.page-shop .shop-product-card .product-card-body {
+  padding: 0;
+  text-align: left;
+}
+
+.page-shop .shop-product-card .product-brand {
+  display: none;
+}
+
+.page-shop .shop-product-card .product-name {
+  font-size: 1.35rem;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+}
+
+.page-shop .shop-product-card .product-rating {
+  color: #C4A035;
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.page-shop .shop-product-card .product-price-row {
+  margin-bottom: 1rem;
+}
+
+.page-shop .shop-product-card .product-price {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.shop-add-to-cart-btn {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  color: #fff;
+  background: var(--shop-primary);
+  transition: var(--transition);
+}
+
+.shop-add-to-cart-btn:hover {
+  background: var(--shop-primary-dark);
+}
+
+/* ─── Pagination ─── */
+.page-shop .pagination-nav {
+  margin-top: 3.5rem;
+}
+
+.page-shop .page-link {
+  border-radius: 50% !important;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.9rem;
+}
+
+.page-shop .page-item.active .page-link {
+  background: var(--shop-primary-dark);
+  color: #fff;
+}
+
+.page-shop .page-link:hover {
+  background: var(--shop-hero-bg);
+  color: var(--text-dark);
+}
+
+.page-shop .page-item.disabled .page-link {
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.4;
+}
+
+/* ─── Wishlist section on shop ─── */
+.page-shop #wishlistSection .section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}

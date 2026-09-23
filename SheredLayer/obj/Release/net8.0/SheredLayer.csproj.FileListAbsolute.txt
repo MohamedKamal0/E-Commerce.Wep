@@ -1,0 +1,12 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\SheredLayer.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\SheredLayer.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.AssemblyInfoInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.AssemblyInfo.cs
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.csproj.CoreCompileInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\refint\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\SheredLayer.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\obj\Release\net8.0\ref\SheredLayer.dll

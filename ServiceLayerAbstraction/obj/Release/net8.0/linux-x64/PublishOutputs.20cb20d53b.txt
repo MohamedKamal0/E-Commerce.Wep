@@ -1,0 +1,5 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\publish\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\publish\ServiceLayerAbstraction.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\publish\ServiceLayerAbstraction.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\publish\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\publish\SheredLayer.pdb

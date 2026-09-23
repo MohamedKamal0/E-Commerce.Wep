@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Crochet Atelier — Premium handmade crochet bags crafted with love. Luxury artisan fashion.">
+  <title>Crochet Atelier — Handmade Crochet Bags</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/responsive.css" rel="stylesheet">
+  <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <div id="navbar-root"></div>
+  <div id="toast-container"></div>
+
+  <!-- Hero -->
+  <section class="hero-section">
+    <div class="hero-bg">
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        preload="metadata"
+        poster="/images/hero-atelier-poster.jpg"
+        aria-hidden="true"
+      >
+        <source src="/videos/hero-atelier.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="hero-content reveal">
+            <span class="hero-subtitle">Artisan Collection 2026</span>
+            <h1 class="hero-title">Handmade Crochet Bags<br><em>Crafted with Love.</em></h1>
+            <p class="hero-text">Discover our collection of luxurious handmade crochet bags. Each piece is meticulously crafted with premium yarn, embodying warmth, elegance, and timeless artisan beauty.</p>
+            <div class="hero-buttons">
+              <a href="/pages/shop.html" class="btn btn-primary btn-lg">Shop Collection</a>
+              <a href="/pages/about.html" class="btn btn-outline btn-lg">Our Story</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section bg-secondary-section">
+    <div class="container">
+      <div class="stats-row reveal">
+        <div class="stat-item"><h3 data-counter="500">0</h3><p>Happy Customers</p></div>
+        <div class="stat-item"><h3 data-counter="120">0</h3><p>Unique Designs</p></div>
+        <div class="stat-item"><h3 data-counter="15">0</h3><p>Artisan Makers</p></div>
+        <div class="stat-item"><h3 data-counter="8">0</h3><p>Years of Craft</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Collections</span>
+        <h2 class="section-title">Featured Categories</h2>
+        <p class="section-subtitle">Explore our curated collections of handmade crochet bags</p>
+      </div>
+      <div class="category-grid reveal">
+        <div class="category-card" data-type="Mini Bags">
+          <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80" alt="Mini Bags" loading="lazy">
+          <div class="category-card-overlay"><h5>Mini Bags</h5></div>
+        </div>
+        <div class="category-card" data-type="Classic Bags">
+          <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80" alt="Classic Bags" loading="lazy">
+          <div class="category-card-overlay"><h5>Classic Bags</h5></div>
+        </div>
+        <div class="category-card" data-type="Shoulder Bags">
+          <img src="https://images.unsplash.com/photo-1591561950457-22254642a2d8?w=600&q=80" alt="Shoulder Bags" loading="lazy">
+          <div class="category-card-overlay"><h5>Shoulder Bags</h5></div>
+        </div>
+        <div class="category-card" data-type="Gift Collection">
+          <img src="https://images.unsplash.com/photo-1492707892479-7bc8c5cfb4e7?w=600&q=80" alt="Gift Collection" loading="lazy">
+          <div class="category-card-overlay"><h5>Gift Collection</h5></div>
+        </div>
+        <div class="category-card" data-type="Limited Edition">
+          <img src="https://images.unsplash.com/photo-1584917865441-de134e167dde?w=600&q=80" alt="Limited Edition" loading="lazy">
+          <div class="category-card-overlay"><h5>Limited Edition</h5></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section bg-secondary-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Curated For You</span>
+        <h2 class="section-title">Featured Handmade Bags</h2>
+        <p class="section-subtitle">Our most loved pieces, handcrafted with premium materials</p>
+      </div>
+      <div class="products-grid" id="featuredProducts"></div>
+      <div class="text-center mt-4 reveal">
+        <a href="/pages/shop.html" class="btn btn-outline">View All Products</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Products -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Trending Now</span>
+        <h2 class="section-title">Popular Products</h2>
+      </div>
+      <div class="products-grid" id="popularProducts"></div>
+    </div>
+  </section>
+
+  <!-- Reviews -->
+  <section class="section bg-secondary-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">Testimonials</span>
+        <h2 class="section-title">What Our Customers Say</h2>
+      </div>
+      <div class="reviews-grid reveal">
+        <div class="review-card">
+          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="review-text">"Absolutely stunning craftsmanship! The bag feels so luxurious and the crochet detail is impeccable. I receive compliments everywhere I go."</p>
+          <div class="review-author">
+            <div class="review-avatar">S</div>
+            <div><h6>Sarah Mitchell</h6><span>Verified Buyer</span></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="review-text">"The quality exceeded my expectations. You can truly feel the love and care put into every stitch. Worth every penny for such a unique piece."</p>
+          <div class="review-author">
+            <div class="review-avatar">E</div>
+            <div><h6>Emma Richardson</h6><span>Verified Buyer</span></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+          <p class="review-text">"Beautiful packaging, fast shipping, and the most gorgeous bag I've ever owned. Crochet Atelier has become my go-to for special gifts."</p>
+          <div class="review-author">
+            <div class="review-avatar">L</div>
+            <div><h6>Lily Chen</h6><span>Verified Buyer</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="section">
+    <div class="container">
+      <div class="newsletter-section reveal">
+        <span class="section-label">Stay Connected</span>
+        <h2 class="section-title">Join Our Newsletter</h2>
+        <p class="section-subtitle">Be the first to discover new collections, exclusive offers, and artisan stories.</p>
+        <form class="newsletter-form-inline" id="homeNewsletterForm">
+          <input type="email" placeholder="Enter your email" required aria-label="Email address">
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-root"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/js/pages/home.js"></script>
+</body>
+</html>

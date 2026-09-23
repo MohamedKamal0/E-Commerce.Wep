@@ -1,0 +1,3 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\linux-x64\publish\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\linux-x64\publish\SheredLayer.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\SheredLayer\bin\Release\net8.0\linux-x64\publish\SheredLayer.pdb

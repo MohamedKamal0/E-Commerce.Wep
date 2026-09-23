@@ -26,11 +26,12 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnstring"));
+    option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnstring"));
 });
+
 builder.Services.AddDbContext<StoreIdentityDbContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnstring"));
+    option.UseNpgsql(builder.Configuration.GetConnectionString("IdentityConnstring"));
 });
 builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
 builder.Services.AddScoped<IUnitOfWorke, UnitOfWorke>();
@@ -105,6 +106,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<IDataSeeding, DataSeeding>();
 var app = builder.Build();
+
 
 using var Scope = app.Services.CreateScope();
 var ObjectOfDataSeeding = Scope.ServiceProvider.GetRequiredService<IDataSeeding>();

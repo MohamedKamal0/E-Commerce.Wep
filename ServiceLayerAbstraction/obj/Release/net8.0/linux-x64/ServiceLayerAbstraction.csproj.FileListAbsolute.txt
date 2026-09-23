@@ -1,0 +1,16 @@
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\ServiceLayerAbstraction.deps.json
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\ServiceLayerAbstraction.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\SheredLayer.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\bin\Release\net8.0\linux-x64\SheredLayer.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.csproj.AssemblyReference.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.AssemblyInfoInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.AssemblyInfo.cs
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.csproj.CoreCompileInputs.cache
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.sourcelink.json
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceL.D5C65B2C.Up2Date
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\refint\ServiceLayerAbstraction.dll
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ServiceLayerAbstraction.pdb
+C:\Users\medok\source\repos\E-Commerce.Wep\ServiceLayerAbstraction\obj\Release\net8.0\linux-x64\ref\ServiceLayerAbstraction.dll
