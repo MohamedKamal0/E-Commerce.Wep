@@ -1,12 +1,80 @@
+name: e-commerce-wep
+
 services:
+
+  webapi:
+    image: e-commerce-wep:latest
+    container_name: webapi
+    networks:
+      - e-commerce-wep
+
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnstring=Host=postgres;Port=5432;Database=EcommerceDb;Username=postgres;Password=123
+      - ConnectionStrings__IdentityConnstring=Host=postgres;Port=5432;Database=EcommerceIdentityDb;Username=postgres;Password=123
+      - ConnectionStrings__Redis=redis:6379,password=String123,abortConnect=false
+
+    ports:
+      - "5080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+    restart: on-failure
+
+
+  postgres:
+    container_name: postgres
+    image: postgres:18-alpine
+
+    networks:
+      - e-commerce-wep
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+     - postgresdata:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+
+
   redis:
-    image: redis:latest
     container_name: redis
+    image: redis:7-alpine
+
+    networks:
+      - e-commerce-wep
+
+    command: redis-server --requirepass String123 --appendonly yes
+
     ports:
       - "6379:6379"
-    command: redis-server --requirepass String123 --appendonly yes
+
     volumes:
-      - redis-data:/data
+      - redisdata:/data
+
+    restart: unless-stopped
+
 
 volumes:
-  redis-data:
+  postgresdata:
+  redisdata:
+
+
+networks:
+  e-commerce-wep:
+    name: e-commerce-wep
